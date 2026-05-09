@@ -6,287 +6,292 @@
 <title>Shift Lookup · Pregled izmen</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root {
-  --bg:#f4f4f4;--surface:#fff;--text:#1a1a1a;--subtext:#555;
-  --accent:#008080;--accent2:#005f5f;--border:#ddd;
-  --card-bg:#fff;--off-bg:#f0f0f0;--modal-bg:rgba(0,0,0,0.55);
-  --lang-bg:#1a1a1a;--lang-text:#fff;--lang-border:#444;
-}
-[data-theme="dark"] {
-  --bg:#121212;--surface:#1e1e1e;--text:#f0f0f0;--subtext:#aaa;
-  --accent:#00b3b3;--accent2:#009090;--border:#333;
-  --card-bg:#252525;--off-bg:#1a1a1a;--modal-bg:rgba(0,0,0,0.85);
-  --lang-bg:#1a1a1a;--lang-text:#fff;--lang-border:#555;
-}
+:root{--bg:#f4f4f4;--surface:#fff;--text:#1a1a1a;--sub:#555;--accent:#008080;--accent2:#005f5f;--border:#ddd;--card:#fff;--off:#f0f0f0;--modal:rgba(0,0,0,0.55);--lb:#1a1a1a;--lt:#fff;--lbo:#444;}
+[data-theme="dark"]{--bg:#121212;--surface:#1e1e1e;--text:#f0f0f0;--sub:#aaa;--accent:#00b3b3;--accent2:#009090;--border:#333;--card:#252525;--off:#1a1a1a;--modal:rgba(0,0,0,0.85);--lb:#1a1a1a;--lt:#fff;--lbo:#555;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;}
-#lang-modal{position:fixed;inset:0;background:var(--modal-bg);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(8px);}
-.modal-box{background:var(--surface);border-radius:22px;padding:36px 32px;width:320px;text-align:center;box-shadow:0 10px 50px rgba(0,0,0,0.35);}
-.modal-top{display:flex;justify-content:flex-end;margin-bottom:14px;}
-.theme-toggle{background:none;border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;font-size:0.78rem;color:var(--text);display:flex;align-items:center;gap:5px;}
-.modal-icon{font-size:2.8rem;margin-bottom:8px;}
-.modal-title{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:3px;}
-.modal-sub{font-size:0.8rem;color:var(--subtext);margin-bottom:26px;}
-.lang-options{display:flex;gap:14px;justify-content:center;}
-.lang-btn{background:var(--lang-bg);color:var(--lang-text);border:2px solid var(--lang-border);border-radius:14px;width:118px;height:88px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:border-color .2s,transform .15s;}
-.lang-btn:hover{border-color:var(--accent);transform:translateY(-3px);}
-.lang-code{font-size:1.9rem;font-weight:800;letter-spacing:2px;}
-.lang-name{font-size:0.68rem;color:var(--subtext);text-transform:uppercase;letter-spacing:1px;}
+/* MODAL */
+#modal{position:fixed;inset:0;background:var(--modal);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(8px);}
+.mbox{background:var(--surface);border-radius:22px;padding:36px 32px;width:320px;text-align:center;box-shadow:0 10px 50px rgba(0,0,0,0.4);}
+.mtop{display:flex;justify-content:flex-end;margin-bottom:14px;}
+.ttog{background:none;border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;font-size:.78rem;color:var(--text);display:flex;align-items:center;gap:5px;}
+.micon{font-size:2.8rem;margin-bottom:8px;}
+.mtitle{font-size:1.05rem;font-weight:700;margin-bottom:3px;}
+.msub{font-size:.8rem;color:var(--sub);margin-bottom:26px;}
+.lopts{display:flex;gap:14px;justify-content:center;}
+.lbtn{background:var(--lb);color:var(--lt);border:2px solid var(--lbo);border-radius:14px;width:120px;height:88px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:border-color .2s,transform .15s;}
+.lbtn:hover{border-color:var(--accent);transform:translateY(-3px);}
+.lcode{font-size:1.9rem;font-weight:800;letter-spacing:2px;}
+.lname{font-size:.68rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;}
+/* APP */
 #app{display:none;}
 header{background:var(--surface);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.hdr-left{display:flex;align-items:center;gap:9px;}
-.hdr-icon{font-size:1.4rem;}
-.hdr-title{font-size:0.95rem;font-weight:700;color:var(--accent);}
-.hdr-right{display:flex;gap:8px;align-items:center;}
-.hdr-btn{background:none;border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:0.76rem;cursor:pointer;color:var(--text);transition:border-color .2s;}
-.hdr-btn:hover{border-color:var(--accent);}
-.hdr-btn.active{border-color:var(--accent);color:var(--accent);font-weight:700;}
-.search-section{max-width:580px;margin:44px auto 0;padding:0 20px;text-align:center;}
-.search-greeting{font-size:1.55rem;font-weight:700;margin-bottom:6px;}
-.search-sub{font-size:0.88rem;color:var(--subtext);margin-bottom:22px;}
-.search-box{display:flex;gap:10px;}
-.search-box input{flex:1;padding:13px 18px;border:2px solid var(--border);border-radius:12px;font-size:1rem;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
-.search-box input:focus{border-color:var(--accent);}
-.search-box button{padding:13px 22px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:0.92rem;font-weight:600;cursor:pointer;transition:background .2s;}
-.search-box button:hover{background:var(--accent2);}
-.upload-hint{max-width:580px;margin:10px auto 0;padding:0 20px;text-align:center;font-size:0.8rem;color:var(--subtext);}
-.upload-hint a{color:var(--accent);cursor:pointer;text-decoration:underline;}
-.results-section{max-width:680px;margin:30px auto;padding:0 20px 70px;}
-.person-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
-.person-avatar{width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;flex-shrink:0;}
-.pname{font-size:1.15rem;font-weight:700;}
-.pmonth{font-size:0.8rem;color:var(--subtext);margin-top:2px;}
-.tab-row{display:flex;gap:10px;margin-bottom:18px;}
-.tab-btn{flex:1;padding:10px;border-radius:10px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-size:0.85rem;font-weight:600;cursor:pointer;transition:all .2s;}
-.tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-.today-card{border-radius:16px;padding:20px 22px;margin-bottom:14px;border:2px solid var(--accent);background:var(--card-bg);}
-.today-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:7px;}
-.today-status{font-size:1.35rem;font-weight:700;}
-.today-time{font-size:0.92rem;color:var(--subtext);margin-top:4px;}
-.badge{display:inline-block;font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;}
-.badge-overnight{background:#ff8c00;color:#fff;}
-.shift-list{display:flex;flex-direction:column;gap:9px;}
-.shift-card{background:var(--card-bg);border:1px solid var(--border);border-radius:13px;padding:13px 17px;display:flex;align-items:center;gap:13px;}
-.shift-card.off{background:var(--off-bg);opacity:.65;}
-.shift-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.dot-work{background:var(--accent);}
-.dot-off{background:#888;}
-.dot-overnight{background:#ff8c00;}
-.shift-date-col{min-width:100px;}
-.shift-date{font-size:0.8rem;color:var(--subtext);}
-.shift-dow{font-size:0.72rem;color:var(--subtext);margin-top:1px;}
-.shift-time{font-size:0.92rem;font-weight:600;}
-.shift-note{font-size:0.72rem;color:#ff8c00;margin-top:2px;}
-.empty-state{text-align:center;padding:48px 20px;color:var(--subtext);}
-.empty-icon{font-size:3rem;margin-bottom:12px;}
-#admin-panel{display:none;max-width:480px;margin:40px auto;padding:0 20px 60px;}
-.admin-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;}
-.admin-title{font-size:1.05rem;font-weight:700;margin-bottom:5px;}
-.admin-sub{font-size:0.83rem;color:var(--subtext);margin-bottom:20px;}
-.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:34px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:12px;}
-.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);background:rgba(0,128,128,0.06);}
-.dz-icon{font-size:2rem;margin-bottom:8px;}
-.drop-zone p{font-size:0.85rem;color:var(--subtext);}
-.drop-zone strong{color:var(--accent);}
-#file-input{display:none;}
-.admin-status{font-size:0.83rem;margin-top:10px;padding:10px 14px;border-radius:8px;display:none;}
-.admin-status.success{background:#d4edda;color:#155724;display:block;}
-.admin-status.error{background:#f8d7da;color:#721c24;display:block;}
-[data-theme="dark"] .admin-status.success{background:#1a3a1a;color:#a3d9a5;}
-[data-theme="dark"] .admin-status.error{background:#3a1a1a;color:#f5a5a5;}
-.loaded-info{font-size:0.78rem;color:var(--subtext);margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
-.back-btn-full{margin-top:16px;width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--text);font-size:0.88rem;cursor:pointer;transition:border-color .2s;}
-.back-btn-full:hover{border-color:var(--accent);}
-@media(max-width:480px){
-  .modal-box{width:92vw;padding:26px 16px;}
-  .lang-btn{width:105px;height:80px;}
-  .search-greeting{font-size:1.2rem;}
-  .tab-btn{font-size:0.78rem;padding:9px 6px;}
-}
+.hl{display:flex;align-items:center;gap:9px;}
+.hicon{font-size:1.4rem;}
+.htitle{font-size:.95rem;font-weight:700;color:var(--accent);}
+.hr{display:flex;gap:8px;align-items:center;}
+.hbtn{background:none;border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:.76rem;cursor:pointer;color:var(--text);transition:border-color .2s;}
+.hbtn:hover{border-color:var(--accent);}
+.hbtn.on{border-color:var(--accent);color:var(--accent);font-weight:700;}
+/* SEARCH */
+.ss{max-width:580px;margin:44px auto 0;padding:0 20px;text-align:center;}
+.sg{font-size:1.55rem;font-weight:700;margin-bottom:6px;}
+.ssub{font-size:.88rem;color:var(--sub);margin-bottom:22px;}
+.sb{display:flex;gap:10px;}
+.sb input{flex:1;padding:13px 18px;border:2px solid var(--border);border-radius:12px;font-size:1rem;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
+.sb input:focus{border-color:var(--accent);}
+.sb button{padding:13px 22px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:.92rem;font-weight:600;cursor:pointer;transition:background .2s;}
+.sb button:hover{background:var(--accent2);}
+.uhint{max-width:580px;margin:10px auto 0;padding:0 20px;text-align:center;font-size:.8rem;color:var(--sub);}
+.uhint a{color:var(--accent);cursor:pointer;text-decoration:underline;}
+/* RESULTS */
+.rs{max-width:680px;margin:30px auto;padding:0 20px 70px;}
+.ph{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.av{width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;}
+.pn{font-size:1.15rem;font-weight:700;}
+.pm{font-size:.8rem;color:var(--sub);margin-top:2px;}
+.tabs{display:flex;gap:10px;margin-bottom:18px;}
+.tab{flex:1;padding:10px;border-radius:10px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.tab.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.tcard{border-radius:16px;padding:20px 22px;margin-bottom:14px;border:2px solid var(--accent);background:var(--card);}
+.tlbl{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:7px;}
+.tst{font-size:1.35rem;font-weight:700;}
+.ttm{font-size:.92rem;color:var(--sub);margin-top:4px;}
+.bdg{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;background:#ff8c00;color:#fff;}
+.slist{display:flex;flex-direction:column;gap:9px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px 17px;display:flex;align-items:center;gap:13px;}
+.sc.off{background:var(--off);opacity:.65;}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.dw{background:var(--accent);}
+.do{background:#888;}
+.dn{background:#ff8c00;}
+.dc{min-width:100px;}
+.dd{font-size:.8rem;color:var(--sub);}
+.dw2{font-size:.72rem;color:var(--sub);margin-top:1px;}
+.dt{font-size:.92rem;font-weight:600;}
+.dn2{font-size:.72rem;color:#ff8c00;margin-top:2px;}
+.empty{text-align:center;padding:48px 20px;color:var(--sub);}
+.eico{font-size:3rem;margin-bottom:12px;}
+/* ADMIN */
+#adm{display:none;max-width:480px;margin:40px auto;padding:0 20px 60px;}
+.ac{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;}
+.at{font-size:1.05rem;font-weight:700;margin-bottom:5px;}
+.as{font-size:.83rem;color:var(--sub);margin-bottom:20px;}
+.dz{border:2px dashed var(--border);border-radius:12px;padding:34px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:12px;}
+.dz:hover,.dz.over{border-color:var(--accent);background:rgba(0,128,128,.06);}
+.dzi{font-size:2rem;margin-bottom:8px;}
+.dz p{font-size:.85rem;color:var(--sub);}
+.dz strong{color:var(--accent);}
+#fi{display:none;}
+.ast{font-size:.83rem;margin-top:10px;padding:10px 14px;border-radius:8px;display:none;}
+.ast.ok{background:#d4edda;color:#155724;display:block;}
+.ast.er{background:#f8d7da;color:#721c24;display:block;}
+[data-theme="dark"] .ast.ok{background:#1a3a1a;color:#a3d9a5;}
+[data-theme="dark"] .ast.er{background:#3a1a1a;color:#f5a5a5;}
+.li{font-size:.78rem;color:var(--sub);margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.bb{margin-top:16px;width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--text);font-size:.88rem;cursor:pointer;transition:border-color .2s;}
+.bb:hover{border-color:var(--accent);}
+@media(max-width:480px){.mbox{width:92vw;padding:26px 16px;}.lbtn{width:105px;height:80px;}.sg{font-size:1.2rem;}.tab{font-size:.78rem;padding:9px 6px;}}
 </style>
 </head>
 <body data-theme="dark">
 
-<div id="lang-modal">
-  <div class="modal-box">
-    <div class="modal-top">
-      <button class="theme-toggle" onclick="toggleTheme()">
-        <span id="m-theme-icon">☀️</span>
-        <span id="m-theme-lbl">Light</span>
-      </button>
+<div id="modal">
+  <div class="mbox">
+    <div class="mtop">
+      <button class="ttog" onclick="togTheme()"><span id="ticon">☀️</span><span id="tlbl">Light</span></button>
     </div>
-    <div class="modal-icon">📅</div>
-    <div class="modal-title">Shift Lookup · Pregled izmen</div>
-    <div class="modal-sub">Choose language / Izberite jezik</div>
-    <div class="lang-options">
-      <button class="lang-btn" onclick="setLang('en')">
-        <span class="lang-code">EN</span>
-        <span class="lang-name">English</span>
-      </button>
-      <button class="lang-btn" onclick="setLang('sl')">
-        <span class="lang-code">SI</span>
-        <span class="lang-name">Slovenščina</span>
-      </button>
+    <div class="micon">📅</div>
+    <div class="mtitle">Shift Lookup · Pregled izmen</div>
+    <div class="msub">Choose language / Izberite jezik</div>
+    <div class="lopts">
+      <button class="lbtn" onclick="setL('en')"><span class="lcode">EN</span><span class="lname">English</span></button>
+      <button class="lbtn" onclick="setL('sl')"><span class="lcode">SI</span><span class="lname">Slovenščina</span></button>
     </div>
   </div>
 </div>
 
 <div id="app">
   <header>
-    <div class="hdr-left">
-      <span class="hdr-icon">📅</span>
-      <span class="hdr-title" id="hdr-title">Shift Lookup</span>
-    </div>
-    <div class="hdr-right">
-      <button class="hdr-btn" id="btn-en" onclick="setLang('en')">EN</button>
-      <button class="hdr-btn" id="btn-sl" onclick="setLang('sl')">SI</button>
-      <button class="hdr-btn" onclick="toggleTheme()" id="hdr-theme-btn">☀️</button>
-      <button class="hdr-btn" onclick="showAdmin()" id="hdr-admin-btn">⚙️ <span id="hdr-admin-lbl">Admin</span></button>
+    <div class="hl"><span class="hicon">📅</span><span class="htitle" id="htitle">Shift Lookup</span></div>
+    <div class="hr">
+      <button class="hbtn" id="ben" onclick="setL('en')">EN</button>
+      <button class="hbtn" id="bsl" onclick="setL('sl')">SI</button>
+      <button class="hbtn" onclick="togTheme()" id="htheme">☀️</button>
+      <button class="hbtn" onclick="goAdmin()" id="hadm">⚙️ <span id="hadmlbl">Admin</span></button>
     </div>
   </header>
-  <div id="search-view">
-    <div class="search-section">
-      <div class="search-greeting" id="greeting"></div>
-      <div class="search-sub" id="search-sub"></div>
-      <div class="search-box">
-        <input id="name-input" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')doSearch()"/>
-        <button onclick="doSearch()" id="search-btn">Search</button>
+
+  <div id="sv">
+    <div class="ss">
+      <div class="sg" id="greet"></div>
+      <div class="ssub" id="ssub"></div>
+      <div class="sb">
+        <input id="ni" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')go()"/>
+        <button onclick="go()" id="sbtn">Search</button>
       </div>
     </div>
-    <div class="upload-hint" id="upload-hint">
-      <span id="hint-text"></span> <a onclick="showAdmin()" id="hint-link"></a><span id="hint-rest"></span>
-    </div>
-    <div class="results-section" id="results"></div>
+    <div class="uhint" id="uh"><span id="uht"></span> <a onclick="goAdmin()" id="uhl"></a><span id="uhr"></span></div>
+    <div class="rs" id="res"></div>
   </div>
-  <div id="admin-panel">
-    <div class="admin-card">
-      <div class="admin-title" id="admin-title"></div>
-      <div class="admin-sub" id="admin-sub"></div>
-      <div class="drop-zone" id="drop-zone"
-           onclick="document.getElementById('file-input').click()"
-           ondragover="dzOver(event)" ondragleave="dzLeave()" ondrop="dzDrop(event)">
-        <div class="dz-icon">📂</div>
-        <p><strong id="dz-click"></strong> <span id="dz-or"></span></p>
-        <p id="dz-hint" style="margin-top:5px;font-size:0.75rem;"></p>
+
+  <div id="adm">
+    <div class="ac">
+      <div class="at" id="at"></div>
+      <div class="as" id="as2"></div>
+      <div class="dz" id="dz" onclick="document.getElementById('fi').click()" ondragover="dzo(event)" ondragleave="dzl()" ondrop="dzd(event)">
+        <div class="dzi">📂</div>
+        <p><strong id="dzc"></strong> <span id="dzo2"></span></p>
+        <p id="dzh" style="margin-top:5px;font-size:.75rem;"></p>
       </div>
-      <input type="file" id="file-input" accept=".xlsx,.xls" onchange="handleFile(this.files[0])"/>
-      <div class="admin-status" id="admin-status"></div>
-      <div class="loaded-info" id="loaded-info"></div>
-      <button class="back-btn-full" onclick="showSearch()" id="back-btn"></button>
+      <input type="file" id="fi" accept=".xlsx,.xls" onchange="hf(this.files[0])"/>
+      <div class="ast" id="ast"></div>
+      <div class="li" id="li"></div>
+      <button class="bb" onclick="goSearch()" id="bb"></button>
     </div>
   </div>
-</div><script>
-// ══ TRANSLATIONS ══
-const T = {
+</div>
+
+<script>
+const TR={
   en:{
-    hdrTitle:"Shift Lookup",
-    greetMorning:"Good morning 👋",greetAfternoon:"Good afternoon 👋",
-    greetEvening:"Good evening 👋",greetNight:"Good night 👋",
-    searchSub:"Enter your name to see your shifts",
-    placeholder:"Your name...",searchBtn:"Search",
-    hintText:"No schedule loaded.",hintLink:"Upload Excel file",hintRest:" to get started.",
-    adminTitle:"Upload Shift Schedule",
-    adminSub:"Upload your monthly .xlsx file. The schedule updates instantly.",
-    dzClick:"Click to choose",dzOr:"or drag & drop",dzHint:"Supports .xlsx files",
-    backBtn:"← Back",adminLbl:"Admin",
-    tabToday:"Today",tabUpcoming:"Upcoming",tabOld:"Old Shifts",
-    todayLbl:"TODAY",working:"Working",dayOff:"Day Off",
-    overnight:"ends next day",noShiftToday:"No shift today",
-    noUpcoming:"No upcoming shifts",noOld:"No past shifts",
-    notFound:"Name not found in the schedule.",
-    notFoundSub:"Check spelling or ask your supervisor.",
-    loadedOk:"Schedule loaded successfully!",
-    loadedInfo:"Loaded",people:"people,",forMonth:"for",
-    themeLight:"Light",themeDark:"Dark",
-    months:["January","February","March","April","May","June",
-            "July","August","September","October","November","December"],
-    dow:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+    title:"Shift Lookup",gm:"Good morning 👋",ga:"Good afternoon 👋",ge:"Good evening 👋",gn:"Good night 👋",
+    sub:"Enter your name to see your shifts",ph:"Your name...",sb:"Search",
+    ht:"No schedule loaded.",hl:"Upload Excel file",hr:" to get started.",
+    at:"Upload Shift Schedule",as:"Upload your monthly .xlsx file. The schedule updates instantly.",
+    dc:"Click to choose",dor:"or drag & drop",dh:"Supports .xlsx files",
+    bb:"← Back",al:"Admin",
+    tt:"Today",tu:"Upcoming",to:"Old Shifts",
+    tl:"TODAY",wk:"Working",off:"Day Off",on:"ends next day",
+    nt:"No shift today",nu:"No upcoming shifts",no:"No past shifts",
+    nf:"Name not found in the schedule.",ns:"Check spelling or ask your supervisor.",
+    ok:"Schedule loaded successfully!",li:"Loaded",pp:"people,",fm:"for",
+    tl2:"Light",td:"Dark",
+    mo:["January","February","March","April","May","June","July","August","September","October","November","December"],
+    dw:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
   },
   sl:{
-    hdrTitle:"Pregled izmen",
-    greetMorning:"Dobro jutro 👋",greetAfternoon:"Dober dan 👋",
-    greetEvening:"Dober večer 👋",greetNight:"Lahko noč 👋",
-    searchSub:"Vnesite ime za ogled vaših izmen",
-    placeholder:"Vaše ime...",searchBtn:"Išči",
-    hintText:"Urnik ni naložen.",hintLink:"Naložite Excel datoteko",hintRest:" za začetek.",
-    adminTitle:"Naložite urnik izmen",
-    adminSub:"Naložite mesečno .xlsx datoteko. Urnik se takoj posodobi.",
-    dzClick:"Kliknite za izbiro",dzOr:"ali povlecite in spustite",dzHint:"Podpira .xlsx datoteke",
-    backBtn:"← Nazaj",adminLbl:"Admin",
-    tabToday:"Danes",tabUpcoming:"Prihajajoče",tabOld:"Stare izmene",
-    todayLbl:"DANES",working:"Delam",dayOff:"Prost dan",
-    overnight:"konča naslednji dan",noShiftToday:"Danes ni izmene",
-    noUpcoming:"Ni prihajajočih izmen",noOld:"Ni starih izmen",
-    notFound:"Ime ni najdeno v urniku.",
-    notFoundSub:"Preverite črkovanje ali vprašajte nadrejenega.",
-    loadedOk:"Urnik uspešno naložen!",
-    loadedInfo:"Naloženo",people:"oseb,",forMonth:"za",
-    themeLight:"Svetla",themeDark:"Temna",
-    months:["Januar","Februar","Marec","April","Maj","Junij",
-            "Julij","Avgust","September","Oktober","November","December"],
-    dow:["Ned","Pon","Tor","Sre","Čet","Pet","Sob"]
+    title:"Pregled izmen",gm:"Dobro jutro 👋",ga:"Dober dan 👋",ge:"Dober večer 👋",gn:"Lahko noč 👋",
+    sub:"Vnesite ime za ogled vaših izmen",ph:"Vaše ime...",sb:"Išči",
+    ht:"Urnik ni naložen.",hl:"Naložite Excel datoteko",hr:" za začetek.",
+    at:"Naložite urnik izmen",as:"Naložite mesečno .xlsx datoteko. Urnik se takoj posodobi.",
+    dc:"Kliknite za izbiro",dor:"ali povlecite in spustite",dh:"Podpira .xlsx datoteke",
+    bb:"← Nazaj",al:"Admin",
+    tt:"Danes",tu:"Prihajajoče",to:"Stare izmene",
+    tl:"DANES",wk:"Delam",off:"Prost dan",on:"konča naslednji dan",
+    nt:"Danes ni izmene",nu:"Ni prihajajočih izmen",no:"Ni starih izmen",
+    nf:"Ime ni najdeno v urniku.",ns:"Preverite črkovanje ali vprašajte nadrejenega.",
+    ok:"Urnik uspešno naložen!",li:"Naloženo",pp:"oseb,",fm:"za",
+    tl2:"Svetla",td:"Temna",
+    mo:["Januar","Februar","Marec","April","Maj","Junij","Julij","Avgust","September","Oktober","November","December"],
+    dw:["Ned","Pon","Tor","Sre","Čet","Pet","Sob"]
   }
 };
 
-// ══ STATE ══
-let lang='en', theme='dark', scheduleData=null, currentTab='today';
+let L='en', THM='dark', DATA=null, TAB='today';
 
-// ══ THEME ══
-function toggleTheme(){
-  theme = theme==='dark'?'light':'dark';
-  document.body.setAttribute('data-theme',theme);
-  const icon = theme==='dark'?'☀️':'🌙';
-  document.getElementById('m-theme-icon').textContent = icon;
-  document.getElementById('m-theme-lbl').textContent  = theme==='dark'?T[lang].themeLight:T[lang].themeDark;
-  document.getElementById('hdr-theme-btn').textContent = icon;
+// ── THEME ──
+function togTheme(){
+  THM=THM==='dark'?'light':'dark';
+  document.body.setAttribute('data-theme',THM);
+  const ic=THM==='dark'?'☀️':'🌙';
+  document.getElementById('ticon').textContent=ic;
+  document.getElementById('htheme').textContent=ic;
+  document.getElementById('tlbl').textContent=THM==='dark'?TR[L].tl2:TR[L].td;
 }
 
-// ══ LANGUAGE ══
-function setLang(l){
-  lang=l;
-  document.getElementById('lang-modal').style.display='none';
+// ── LANGUAGE ──
+function setL(l){
+  L=l;
+  document.getElementById('modal').style.display='none';
   document.getElementById('app').style.display='block';
   applyT();
-  updateGreeting();
-  document.getElementById('btn-en').classList.toggle('active',lang==='en');
-  document.getElementById('btn-sl').classList.toggle('active',lang==='sl');
-  showUploadHint();
+  setGreet();
+  document.getElementById('ben').classList.toggle('on',L==='en');
+  document.getElementById('bsl').classList.toggle('on',L==='sl');
+  document.getElementById('uh').style.display=DATA?'none':'block';
 }
 
 function applyT(){
-  const t=T[lang];
-  document.getElementById('hdr-title').textContent     = t.hdrTitle;
-  document.getElementById('search-sub').textContent    = t.searchSub;
-  document.getElementById('name-input').placeholder    = t.placeholder;
-  document.getElementById('search-btn').textContent    = t.searchBtn;
-  document.getElementById('hdr-admin-lbl').textContent = t.adminLbl;
-  document.getElementById('admin-title').textContent   = t.adminTitle;
-  document.getElementById('admin-sub').textContent     = t.adminSub;
-  document.getElementById('dz-click').textContent      = t.dzClick;
-  document.getElementById('dz-or').textContent         = t.dzOr;
-  document.getElementById('dz-hint').textContent       = t.dzHint;
-  document.getElementById('back-btn').textContent      = t.backBtn;
-  document.getElementById('hint-text').textContent     = t.hintText;
-  document.getElementById('hint-link').textContent     = t.hintLink;
-  document.getElementById('hint-rest').textContent     = t.hintRest;
-  document.getElementById('m-theme-lbl').textContent   = theme==='dark'?t.themeLight:t.themeDark;
+  const t=TR[L];
+  document.getElementById('htitle').textContent=t.title;
+  document.getElementById('ssub').textContent=t.sub;
+  document.getElementById('ni').placeholder=t.ph;
+  document.getElementById('sbtn').textContent=t.sb;
+  document.getElementById('hadmlbl').textContent=t.al;
+  document.getElementById('at').textContent=t.at;
+  document.getElementById('as2').textContent=t.as;
+  document.getElementById('dzc').textContent=t.dc;
+  document.getElementById('dzo2').textContent=t.dor;
+  document.getElementById('dzh').textContent=t.dh;
+  document.getElementById('bb').textContent=t.bb;
+  document.getElementById('uht').textContent=t.ht;
+  document.getElementById('uhl').textContent=t.hl;
+  document.getElementById('uhr').textContent=t.hr;
+  document.getElementById('tlbl').textContent=THM==='dark'?t.tl2:t.td;
+  // re-render results if active
+  if(DATA && document.getElementById('res').innerHTML!=='') go(true);
 }
 
-function updateGreeting(){
-  const h=new Date().getHours();
-  const t=T[lang];
-  let g = h>=5&&h<12 ? t.greetMorning
-        : h>=12&&h<17? t.greetAfternoon
-        : h>=17&&h<22? t.greetEvening
-        : t.greetNight;
-  document.getElementById('greeting').textContent=g;
+function setGreet(){
+  const h=new Date().getHours(),t=TR[L];
+  document.getElementById('greet').textContent=
+    h>=5&&h<12?t.gm:h>=12&&h<17?t.ga:h>=17&&h<22?t.ge:t.gn;
 }
 
-function showUploadHint(){
-  document.getElementById('upload-hint').style.display = scheduleData?'none':'block';
+// ── VIEWS ──
+function goAdmin(){
+  document.getElementById('sv').style.display='none';
+  document.getElementById('adm').style.display='block';
+}
+function goSearch(){
+  document.getElementById('adm').style.display='none';
+  document.getElementById('sv').style.display='block';
 }
 
-// ══ VIEWS ══
-function showAdmin(){
-  document.getElementById('search-view').style.display='none';
-  document.getElementById('admin-panel
+// ── DRAG DROP ──
+function dzo(e){e.preventDefault();document.getElementById('dz').classList.add('over');}
+function dzl(){document.getElementById('dz').classList.remove('over');}
+function dzd(e){e.preventDefault();dzl();hf(e.dataTransfer.files[0]);}
+
+// ── FILE HANDLER ──
+function hf(file){
+  if(!file)return;
+  const ast=document.getElementById('ast');
+  ast.className='ast';
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      DATA=parseSheet(ws);
+      ast.className='ast ok';
+      ast.textContent=TR[L].ok;
+      const t=TR[L];
+      document.getElementById('li').textContent=
+        `${t.li} ${DATA.people.length} ${t.pp} ${t.fm} ${DATA.monthName} ${DATA.year}`;
+      document.getElementById('uh').style.display='none';
+    }catch(err){
+      ast.className='ast er';
+      ast.textContent='Error reading file: '+err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ── EXCEL PARSER ──
+function parseSheet(ws){
+  const range=XLSX.utils.decode_range(ws['!ref']);
+  const rows=[];
+  for(let r=range.s.r;r<=range.e.r;r++){
+    const row=[];
+    for(let c=range.s.c;c<=range.e.c;c++){
+      const cell=ws[XLSX.utils.encode_cell({r,c})];
+      row.push(cell?String(cell.v).trim():'');
+    }
+    rows.push(row);
+  }
+
+  // Find month/year from row 0
+  let monthNum=new Date().getMonth()+1, year=new Date().getFullYear(), monthName='';
+  const slMonths={januar:1,februar:2,marec:3,april:4,maj:5,junij
