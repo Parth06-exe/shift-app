@@ -291,7 +291,7 @@ function go(silent) {
 
   for (var i = 0; i < DATA.people.length; i++) {
     var pn = DATA.people[i].name.toLowerCase();
-    if (pn.indexOf(searchQ) >= 0 || searchQ.indexOf(pn) >= 0) {
+    if (pn.indexOf(searchQ) >= 0) {
       found = DATA.people[i];
       break;
     }
