@@ -39,7 +39,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .sb input:focus{border-color:var(--accent)}
 .sb button{padding:13px 22px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:.92rem;font-weight:600;cursor:pointer;transition:background .2s}
 .sb button:hover{background:var(--accent2)}
-.loadmsg{max-width:580px;margin:12px auto 0;padding:0 20px;text-align:center;font-size:.82rem;color:var(--sub)}
+.lmsg{max-width:580px;margin:12px auto 0;padding:0 20px;text-align:center;font-size:.82rem;color:var(--sub)}
 .rs{max-width:680px;margin:30px auto;padding:0 20px 70px}
 .ph{display:flex;align-items:center;gap:14px;margin-bottom:18px}
 .av{width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;flex-shrink:0}
@@ -57,7 +57,9 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .sc{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px 17px;display:flex;align-items:center;gap:13px}
 .sc.off{background:var(--off);opacity:.65}
 .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.dw{background:var(--accent)}.do{background:#888}.dn{background:#ff8c00}
+.dw{background:var(--accent)}
+.do{background:#888}
+.dn{background:#ff8c00}
 .dc{min-width:100px}
 .dd{font-size:.8rem;color:var(--sub)}
 .dw2{font-size:.72rem;color:var(--sub);margin-top:1px}
@@ -65,19 +67,25 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .dn2{font-size:.72rem;color:#ff8c00;margin-top:2px}
 .empty{text-align:center;padding:48px 20px;color:var(--sub)}
 .eico{font-size:3rem;margin-bottom:12px}
-@media(max-width:480px){.mbox{width:92vw;padding:26px 16px}.lbtn{width:105px;height:80px}.sg{font-size:1.2rem}.tab{font-size:.78rem;padding:9px 6px}}
+@media(max-width:480px){
+  .mbox{width:92vw;padding:26px 16px}
+  .lbtn{width:105px;height:80px}
+  .sg{font-size:1.2rem}
+  .tab{font-size:.78rem;padding:9px 6px}
+}
 </style>
 </head>
 <body data-theme="dark"><div id="modal">
   <div class="mbox">
     <div class="mtop">
       <button class="ttog" onclick="togTheme()">
-        <span id="ticon">☀️</span><span id="tlbl">Light</span>
+        <span id="ticon">&#9728;</span>
+        <span id="tlbl">Light</span>
       </button>
     </div>
-    <div class="micon">🗓️</div>
+    <div class="micon">&#128197;</div>
     <div class="mtitle">Shift Lookup | Pregled izmen</div>
-    <div class="msub">Choose language · Izberite jezik</div>
+    <div class="msub">Choose language &middot; Izberite jezik</div>
     <div class="lopts">
       <button class="lbtn" onclick="setL('en')">
         <span class="lcode">EN</span>
@@ -85,7 +93,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
       </button>
       <button class="lbtn" onclick="setL('sl')">
         <span class="lcode">SI</span>
-        <span class="lname">Slovenščina</span>
+        <span class="lname">Sloven&#353;&#269;ina</span>
       </button>
     </div>
   </div>
@@ -94,219 +102,238 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 <div id="app">
   <header>
     <div class="hl">
-      <span class="hicon">🗓️</span>
+      <span class="hicon">&#128197;</span>
       <span class="htitle" id="htitle">Shift Lookup</span>
     </div>
     <div class="hr">
       <button class="hbtn" id="ben" onclick="setL('en')">EN</button>
       <button class="hbtn" id="bsl" onclick="setL('sl')">SI</button>
-      <button class="hbtn" id="htheme" onclick="togTheme()">☀️</button>
+      <button class="hbtn" id="htheme" onclick="togTheme()">&#9728;</button>
     </div>
   </header>
-
   <div id="sv">
     <div class="ss">
       <div class="sg" id="greet"></div>
-      <div class="ssub" id="ssub">Enter your name to see your shifts</div>
+      <div class="ssub" id="ssub"></div>
       <div class="sb">
-        <input id="ni" type="text" autocomplete="off" placeholder="Your name..."
+        <input id="ni" type="text" autocomplete="off"
           onkeydown="if(event.key==='Enter')go()">
         <button onclick="go()" id="sbtn">Search</button>
       </div>
     </div>
-    <div class="loadmsg" id="loadmsg"></div>
+    <div class="lmsg" id="lmsg"></div>
     <div class="rs" id="res"></div>
   </div>
 </div><script>
-const TR={
-  en:{
-    title:'Shift Lookup',gm:'Good morning, ',ga:'Good afternoon, ',ge:'Good evening, ',gn:'Good night, ',
-    sub:'Enter your name to see your shifts',ph:'Your name...',sb:'Search',
-    tt:'Today',tu:'Upcoming',to:'Old Shifts',tl:'TODAY',wk:'Working',off:'Day Off',on:'ends next day',
-    nt:'No shift today',nu:'No upcoming shifts',no:'No past shifts',
-    nf:'Name not found in the schedule.',ns:'Check spelling or ask your supervisor.',
-    tl2:'Light',td:'Dark',loading:'Loading schedule...',loaded:'Schedule ready ✓',
+var TR = {
+  en: {
+    title:'Shift Lookup',
+    gm:'Good morning, ', ga:'Good afternoon, ', ge:'Good evening, ', gn:'Good night, ',
+    sub:'Enter your name to see your shifts', ph:'Your name...', sb:'Search',
+    tt:'Today', tu:'Upcoming', to:'Old Shifts',
+    tl:'TODAY', wk:'Working', off:'Day Off', on:'ends next day',
+    nt:'No shift today', nu:'No upcoming shifts', no:'No past shifts',
+    nf:'Name not found in the schedule.', ns:'Check spelling or ask your supervisor.',
+    tl2:'Light', td:'Dark', loading:'Loading schedule...', loaded:'Schedule ready',
     mo:['January','February','March','April','May','June','July','August','September','October','November','December'],
     dw:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
   },
-  sl:{
-    title:'Pregled izmen',gm:'Dobro jutro, ',ga:'Dober dan, ',ge:'Dober večer, ',gn:'Lahko noč, ',
-    sub:'Vnesite ime za ogled vaših izmen',ph:'Vaše ime...',sb:'Išči',
-    tt:'Danes',tu:'Prihajajoče',to:'Stare izmene',tl:'DANES',wk:'Delam',off:'Prost dan',on:'konča naslednji dan',
-    nt:'Danes ni izmene',nu:'Ni prihajajočih izmen',no:'Ni starih izmen',
-    nf:'Ime ni najdeno v urniku.',ns:'Preverite črkovanje ali vprašajte nadrejenega.',
-    tl2:'Svetla',td:'Temna',loading:'Nalagam urnik...',loaded:'Urnik pripravljen ✓',
+  sl: {
+    title:'Pregled izmen',
+    gm:'Dobro jutro, ', ga:'Dober dan, ', ge:'Dober ve\u010der, ', gn:'Lahko no\u010d, ',
+    sub:'Vnesite ime za ogled va\u0161ih izmen', ph:'Va\u0161e ime...', sb:'I\u0161\u010di',
+    tt:'Danes', tu:'Prihajajo\u010de', to:'Stare izmene',
+    tl:'DANES', wk:'Delam', off:'Prost dan', on:'kon\u010da naslednji dan',
+    nt:'Danes ni izmene', nu:'Ni prihajajo\u010dih izmen', no:'Ni starih izmen',
+    nf:'Ime ni najdeno v urniku.', ns:'Preverite \u010drkovanje ali vpra\u0161ajte nadrejenega.',
+    tl2:'Svetla', td:'Temna', loading:'Nalagam urnik...', loaded:'Urnik pripravljen',
     mo:['Januar','Februar','Marec','April','Maj','Junij','Julij','Avgust','September','Oktober','November','December'],
-    dw:['Ned','Pon','Tor','Sre','Čet','Pet','Sob']
+    dw:['Ned','Pon','Tor','Sre','\u010cet','Pet','Sob']
   }
 };
 
-const SHEET_URL='https://raw.githubusercontent.com/Parth06-exe/shift-app/main/shift.xlsx';
-let L='en', THM='dark', DATA=null, TAB='today', LAST_Q='';
+var SHEET_URL = 'https://raw.githubusercontent.com/Parth06-exe/shift-app/main/shift.xlsx';
+var L = 'en', THM = 'dark', DATA = null, TAB = 'today', LAST_Q = '';
 
-function togTheme(){
-  THM=THM==='dark'?'light':'dark';
-  document.body.setAttribute('data-theme',THM);
-  const ic=THM==='dark'?'☀️':'🌙';
-  document.getElementById('ticon').textContent=ic;
-  document.getElementById('htheme').textContent=ic;
-  document.getElementById('tlbl').textContent=THM==='dark'?TR[L].tl2:TR[L].td;
+function togTheme() {
+  THM = (THM === 'dark') ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', THM);
+  var ic = (THM === 'dark') ? '&#9728;' : '&#9790;';
+  document.getElementById('ticon').innerHTML = ic;
+  document.getElementById('htheme').innerHTML = ic;
+  document.getElementById('tlbl').textContent = (THM === 'dark') ? TR[L].tl2 : TR[L].td;
 }
 
-function setL(l){
-  L=l;
-  document.getElementById('modal').style.display='none';
-  document.getElementById('app').style.display='block';
+function setL(l) {
+  L = l;
+  document.getElementById('modal').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
   applyT();
   setGreet();
-  document.getElementById('ben').classList.toggle('on',L==='en');
-  document.getElementById('bsl').classList.toggle('on',L==='sl');
-  if(!DATA) loadSchedule();
-  else if(LAST_Q) go(true);
+  document.getElementById('ben').classList.toggle('on', L === 'en');
+  document.getElementById('bsl').classList.toggle('on', L === 'sl');
+  if (!DATA) {
+    loadSchedule();
+  } else if (LAST_Q) {
+    go(true);
+  }
 }
 
-function applyT(){
-  const t=TR[L];
-  document.getElementById('htitle').textContent=t.title;
-  document.getElementById('ssub').textContent=t.sub;
-  document.getElementById('ni').placeholder=t.ph;
-  document.getElementById('sbtn').textContent=t.sb;
-  document.getElementById('tlbl').textContent=THM==='dark'?t.tl2:t.td;
-  if(LAST_Q) go(true);
+function applyT() {
+  var t = TR[L];
+  document.getElementById('htitle').textContent = t.title;
+  document.getElementById('ssub').textContent = t.sub;
+  document.getElementById('ni').placeholder = t.ph;
+  document.getElementById('sbtn').textContent = t.sb;
+  document.getElementById('tlbl').textContent = (THM === 'dark') ? t.tl2 : t.td;
+  if (LAST_Q) go(true);
 }
 
-function setGreet(){
-  const h=new Date().getHours(), t=TR[L];
-  document.getElementById('greet').textContent=
-    h>=5&&h<12?t.gm:h>=12&&h<17?t.ga:h>=17&&h<22?t.ge:t.gn;
+function setGreet() {
+  var h = new Date().getHours();
+  var t = TR[L];
+  var g = (h >= 5 && h < 12) ? t.gm : (h >= 12 && h < 17) ? t.ga : (h >= 17 && h < 22) ? t.ge : t.gn;
+  document.getElementById('greet').textContent = g;
 }
 
-function loadSchedule(){
-  const msg=document.getElementById('loadmsg');
-  msg.textContent=TR[L].loading;
+function loadSchedule() {
+  var msg = document.getElementById('lmsg');
+  msg.textContent = TR[L].loading;
   fetch(SHEET_URL)
-    .then(r=>{if(!r.ok)throw new Error('Network error');return r.arrayBuffer();})
-    .then(buf=>{
-      const wb=XLSX.read(buf,{type:'array'});
-      const ws=wb.Sheets[wb.SheetNames[0]];
-      DATA=parseSheet(ws);
-      msg.textContent=TR[L].loaded;
-      setTimeout(()=>{msg.textContent='';},2500);
+    .then(function(r) {
+      if (!r.ok) throw new Error('Network error');
+      return r.arrayBuffer();
     })
-    .catch(err=>{
-      msg.textContent='⚠️ Could not load schedule. Please check your connection.';
+    .then(function(buf) {
+      var wb = XLSX.read(buf, {type: 'array'});
+      var ws = wb.Sheets[wb.SheetNames[0]];
+      DATA = parseSheet(ws);
+      msg.textContent = TR[L].loaded + ' \u2713';
+      setTimeout(function() { msg.textContent = ''; }, 2500);
+    })
+    .catch(function() {
+      msg.textContent = 'Could not load schedule. Check your connection.';
     });
 }
 
-function parseSheet(ws){
-  const range=XLSX.utils.decode_range(ws['!ref']);
-  const rows=[];
-  for(let r=range.s.r;r<=range.e.r;r++){
-    const row=[];
-    for(let c=range.s.c;c<=range.e.c;c++){
-      const cell=ws[XLSX.utils.encode_cell({r,c})];
-      row.push(cell?String(cell.v).trim():'');
+function parseSheet(ws) {
+  var range = XLSX.utils.decode_range(ws['!ref']);
+  var rows = [];
+  for (var r = range.s.r; r <= range.e.r; r++) {
+    var row = [];
+    for (var c = range.s.c; c <= range.e.c; c++) {
+      var cell = ws[XLSX.utils.encode_cell({r: r, c: c})];
+      row.push(cell ? String(cell.v).trim() : '');
     }
     rows.push(row);
   }
-  const slM={januar:1,februar:2,marec:3,april:4,maj:5,junij:6,julij:7,avgust:8,september:9,oktober:10,november:11,december:12};
-  let monthNum=new Date().getMonth()+1, year=new Date().getFullYear();
-  const r0=rows[0].join(' ').toLowerCase();
-  for(const[k,v] of Object.entries(slM)){if(r0.includes(k)){monthNum=v;break;}}
-  const ym=rows[0].join(' ').match(/\d{4}/);
-  if(ym) year=parseInt(ym[0]);
 
-  let headerRow=-1, nameCol=-1;
-  for(let i=0;i<rows.length;i++){
-    const idx=rows[i].findIndex(c=>c.toLowerCase()==='ime');
-    if(idx>=0){headerRow=i;nameCol=idx;break;}
+  var slM = {januar:1,februar:2,marec:3,april:4,maj:5,junij:6,julij:7,avgust:8,september:9,oktober:10,november:11,december:12};
+  var monthNum = new Date().getMonth() + 1;
+  var year = new Date().getFullYear();
+  var r0 = rows[0].join(' ').toLowerCase();
+  for (var k in slM) {
+    if (r0.indexOf(k) >= 0) { monthNum = slM[k]; break; }
   }
-  if(headerRow<0) return null;
+  var ym = rows[0].join(' ').match(/\d{4}/);
+  if (ym) year = parseInt(ym[0]);
 
-  const dayRow=rows[headerRow];
-  const people=[];
-  for(let r=headerRow+2;r<rows.length;r++){
-    const row=rows[r];
-    const name=(row[nameCol]||'').trim();
-    if(!name||name.startsWith('---')||name==='') continue;
-    const shifts={};
-    for(let c=nameCol+1;c<dayRow.length;c++){
-      const day=parseInt(dayRow[c]);
-      if(!day) continue;
-      const cell=(row[c]||'').trim();
-      const parts=cell.split(/\s+/);
-      if(parts.length>=2 && parts[0]!=='X' && parts[1]!=='X'){
-        const start=parseInt(parts[0]), end=parseInt(parts[1]);
-        if(!isNaN(start)&&!isNaN(end)){
-          const overnight=(start>=13 && end<=6);
-          shifts[day]={start,end,overnight,off:false};
-        } else {
-          shifts[day]={off:true};
-        }
-      } else {
-        shifts[day]={off:true};
+  var headerRow = -1, nameCol = -1;
+  for (var i = 0; i < rows.length; i++) {
+    for (var j = 0; j < rows[i].length; j++) {
+      if (rows[i][j].toLowerCase() === 'ime') {
+        headerRow = i; nameCol = j; break;
       }
     }
-    people.push({name,shifts});
+    if (headerRow >= 0) break;
   }
-  return{people,monthNum,year,monthName:TR.en.mo[monthNum-1]||''};
+  if (headerRow < 0) return null;
+
+  var dayRow = rows[headerRow];
+  var people = [];
+  for (var ri = headerRow + 2; ri < rows.length; ri++) {
+    var row2 = rows[ri];
+    var name = (row2[nameCol] || '').trim();
+    if (!name || name.indexOf('---') === 0) continue;
+    var shifts = {};
+    for (var ci = nameCol + 1; ci < dayRow.length; ci++) {
+      var day = parseInt(dayRow[ci]);
+      if (!day) continue;
+      var cellVal = (row2[ci] || '').trim();
+      var parts = cellVal.split(/\s+/);
+      if (parts.length >= 2 && parts[0] !== 'X' && parts[1] !== 'X') {
+        var st = parseInt(parts[0]);
+        var en = parseInt(parts[1]);
+        if (!isNaN(st) && !isNaN(en)) {
+          shifts[day] = {start: st, end: en, overnight: (st >= 13 && en <= 6), off: false};
+        } else {
+          shifts[day] = {off: true};
+        }
+      } else {
+        shifts[day] = {off: true};
+      }
+    }
+    people.push({name: name, shifts: shifts});
+  }
+  return {people: people, monthNum: monthNum, year: year};
 }
 </script><script>
-function go(silent){
-  if(!DATA) return;
-  const q=(document.getElementById('ni').value||'').trim().toLowerCase();
-  if(!q && !silent) return;
-  if(q) LAST_Q=q;
-  const searchQ=q||LAST_Q;
-  const t=TR[L];
-  const res=document.getElementById('res');
+function go(silent) {
+  if (!DATA) return;
+  var q = document.getElementById('ni').value.trim().toLowerCase();
+  if (q) LAST_Q = q;
+  var searchQ = LAST_Q;
+  if (!searchQ) return;
 
-  const found=DATA.people.find(p=>{
-    const pn=p.name.toLowerCase();
-    return pn.includes(searchQ)||searchQ.split(' ').some(w=>w.length>1&&pn.includes(w));
-  });
+  var t = TR[L];
+  var res = document.getElementById('res');
+  var found = null;
 
-  if(!found){
-    if(searchQ) res.innerHTML=`<div class="empty"><div class="eico">🔍</div><div>${t.nf}</div><div style="font-size:.82rem;margin-top:6px;color:var(--sub)">${t.ns}</div></div>`;
+  for (var i = 0; i < DATA.people.length; i++) {
+    var pn = DATA.people[i].name.toLowerCase();
+    if (pn.indexOf(searchQ) >= 0 || searchQ.indexOf(pn) >= 0) {
+      found = DATA.people[i];
+      break;
+    }
+    var words = searchQ.split(' ');
+    for (var w = 0; w < words.length; w++) {
+      if (words[w].length > 1 && pn.indexOf(words[w]) >= 0) {
+        found = DATA.people[i];
+        break;
+      }
+    }
+    if (found) break;
+  }
+
+  if (!found) {
+    res.innerHTML = '<div class="empty"><div class="eico">&#128269;</div><div>' + t.nf + '</div><div style="font-size:.82rem;margin-top:6px;color:var(--sub)">' + t.ns + '</div></div>';
     return;
   }
 
-  const today=new Date();
-  const todayDay=today.getDate();
-  const todayMonth=today.getMonth()+1;
-  const todayYear=today.getFullYear();
-  const isCurrentMonth=(DATA.monthNum===todayMonth && DATA.year===todayYear);
-  const initials=found.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+  var today = new Date();
+  var todayDay = today.getDate();
+  var todayMonth = today.getMonth() + 1;
+  var todayYear = today.getFullYear();
+  var isNow = (DATA.monthNum === todayMonth && DATA.year === todayYear);
+  var initials = found.name.split(' ').map(function(w) { return w[0] || ''; }).join('').slice(0, 2).toUpperCase();
 
-  function makeCard(d){
-    const s=found.shifts[d];
-    const date=new Date(DATA.year,DATA.monthNum-1,d);
-    const dow=t.dw[date.getDay()];
-    const mo=TR.en.mo[DATA.monthNum-1];
-    const dateStr=`${d} ${mo}`;
-    if(s.off) return `<div class="sc off"><div class="dot do"></div><div class="dc"><div class="dd">${dateStr}</div><div class="dw2">${dow}</div></div><div class="dt">${t.off}</div></div>`;
-    const over=s.overnight?`<div class="dn2">⏱ ${t.on}</div>`:'';
-    const cls=s.overnight?'dn':'dw';
-    return `<div class="sc"><div class="dot ${cls}"></div><div class="dc"><div class="dd">${dateStr}</div><div class="dw2">${dow}</div></div><div><div class="dt">${s.start}:00 – ${s.end}:00</div>${over}</div></div>`;
+  function makeCard(d) {
+    var s = found.shifts[d];
+    var dt = new Date(DATA.year, DATA.monthNum - 1, d);
+    var dow = t.dw[dt.getDay()];
+    var dateStr = d + ' ' + TR.en.mo[DATA.monthNum - 1];
+    if (s.off) {
+      return '<div class="sc off"><div class="dot do"></div><div class="dc"><div class="dd">' + dateStr + '</div><div class="dw2">' + dow + '</div></div><div class="dt">' + t.off + '</div></div>';
+    }
+    var over = s.overnight ? '<div class="dn2">&#9201; ' + t.on + '</div>' : '';
+    var cls = s.overnight ? 'dn' : 'dw';
+    return '<div class="sc"><div class="dot ' + cls + '"></div><div class="dc"><div class="dd">' + dateStr + '</div><div class="dw2">' + dow + '</div></div><div><div class="dt">' + s.start + ':00 &ndash; ' + s.end + ':00</div>' + over + '</div></div>';
   }
 
-  const days=Object.keys(found.shifts).map(Number).sort((a,b)=>a-b);
+  var days = Object.keys(found.shifts).map(Number).sort(function(a, b) { return a - b; });
+  var todayHTML = '', upHTML = '', oldHTML = '';
 
-  let todayHTML='', upHTML='', oldHTML='';
-
-  if(isCurrentMonth){
-    const ts=found.shifts[todayDay];
-    if(ts){
-      if(ts.off){
-        todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">🌿 ${t.off}</div></div>`;
-      } else {
-        const over=ts.overnight?`<span class="bdg">⏱ ${t.on}</span>`:'';
-        todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">✅ ${t.wk}${over}</div><div class="ttm">${ts.start}:00 – ${ts.end}:00</div></div>`;
-      }
-    } else {
-      todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">🌿 ${t.off}</div></div>`;
-    }
-    const up=days.filter(d=>d>todayDay);
-    const old=days.filter(d=>d<todayDay);
-    upHTML=up.length?`<div class="slist">${up.map(makeCard).join('')}</div>`:`<div class="empty"><div class="eico">📅</div>${t.nu}</div>`;
-    oldHTML=old.length?`<div class="slist">${old.map(makeCard).join('')}</div>`:`<div class="empty"><div class
+  if (isNow) {
+    var ts = found.shifts[todayDay];
+    if (!ts || ts.off) {
+      todayHTML = '<div class="
