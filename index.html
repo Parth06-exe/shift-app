@@ -10,7 +10,6 @@
 [data-theme="dark"]{--bg:#121212;--surface:#1e1e1e;--text:#f0f0f0;--sub:#aaa;--accent:#00b3b3;--accent2:#009090;--border:#333;--card:#252525;--off:#1a1a1a;--modal:rgba(0,0,0,0.85);--lb:#1a1a1a;--lt:#fff;--lbo:#555;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;}
-/* MODAL */
 #modal{position:fixed;inset:0;background:var(--modal);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(8px);}
 .mbox{background:var(--surface);border-radius:22px;padding:36px 32px;width:320px;text-align:center;box-shadow:0 10px 50px rgba(0,0,0,0.4);}
 .mtop{display:flex;justify-content:flex-end;margin-bottom:14px;}
@@ -23,7 +22,6 @@ body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);mi
 .lbtn:hover{border-color:var(--accent);transform:translateY(-3px);}
 .lcode{font-size:1.9rem;font-weight:800;letter-spacing:2px;}
 .lname{font-size:.68rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;}
-/* APP */
 #app{display:none;}
 header{background:var(--surface);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .hl{display:flex;align-items:center;gap:9px;}
@@ -33,7 +31,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .hbtn{background:none;border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:.76rem;cursor:pointer;color:var(--text);transition:border-color .2s;}
 .hbtn:hover{border-color:var(--accent);}
 .hbtn.on{border-color:var(--accent);color:var(--accent);font-weight:700;}
-/* SEARCH */
 .ss{max-width:580px;margin:44px auto 0;padding:0 20px;text-align:center;}
 .sg{font-size:1.55rem;font-weight:700;margin-bottom:6px;}
 .ssub{font-size:.88rem;color:var(--sub);margin-bottom:22px;}
@@ -44,7 +41,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .sb button:hover{background:var(--accent2);}
 .uhint{max-width:580px;margin:10px auto 0;padding:0 20px;text-align:center;font-size:.8rem;color:var(--sub);}
 .uhint a{color:var(--accent);cursor:pointer;text-decoration:underline;}
-/* RESULTS */
 .rs{max-width:680px;margin:30px auto;padding:0 20px 70px;}
 .ph{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
 .av{width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;}
@@ -72,11 +68,10 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .dn2{font-size:.72rem;color:#ff8c00;margin-top:2px;}
 .empty{text-align:center;padding:48px 20px;color:var(--sub);}
 .eico{font-size:3rem;margin-bottom:12px;}
-/* ADMIN */
 #adm{display:none;max-width:480px;margin:40px auto;padding:0 20px 60px;}
 .ac{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;}
-.at{font-size:1.05rem;font-weight:700;margin-bottom:5px;}
-.as{font-size:.83rem;color:var(--sub);margin-bottom:20px;}
+.at2{font-size:1.05rem;font-weight:700;margin-bottom:5px;}
+.as2{font-size:.83rem;color:var(--sub);margin-bottom:20px;}
 .dz{border:2px dashed var(--border);border-radius:12px;padding:34px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:12px;}
 .dz:hover,.dz.over{border-color:var(--accent);background:rgba(0,128,128,.06);}
 .dzi{font-size:2rem;margin-bottom:8px;}
@@ -88,14 +83,13 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .ast.er{background:#f8d7da;color:#721c24;display:block;}
 [data-theme="dark"] .ast.ok{background:#1a3a1a;color:#a3d9a5;}
 [data-theme="dark"] .ast.er{background:#3a1a1a;color:#f5a5a5;}
-.li{font-size:.78rem;color:var(--sub);margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.li2{font-size:.78rem;color:var(--sub);margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
 .bb{margin-top:16px;width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--text);font-size:.88rem;cursor:pointer;transition:border-color .2s;}
 .bb:hover{border-color:var(--accent);}
 @media(max-width:480px){.mbox{width:92vw;padding:26px 16px;}.lbtn{width:105px;height:80px;}.sg{font-size:1.2rem;}.tab{font-size:.78rem;padding:9px 6px;}}
 </style>
 </head>
 <body data-theme="dark">
-
 <div id="modal">
   <div class="mbox">
     <div class="mtop">
@@ -110,7 +104,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
     </div>
   </div>
 </div>
-
 <div id="app">
   <header>
     <div class="hl"><span class="hicon">📅</span><span class="htitle" id="htitle">Shift Lookup</span></div>
@@ -118,10 +111,9 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
       <button class="hbtn" id="ben" onclick="setL('en')">EN</button>
       <button class="hbtn" id="bsl" onclick="setL('sl')">SI</button>
       <button class="hbtn" onclick="togTheme()" id="htheme">☀️</button>
-      <button class="hbtn" onclick="goAdmin()" id="hadm">⚙️ <span id="hadmlbl">Admin</span></button>
+      <button class="hbtn" onclick="goAdmin()">⚙️ <span id="hadmlbl">Admin</span></button>
     </div>
   </header>
-
   <div id="sv">
     <div class="ss">
       <div class="sg" id="greet"></div>
@@ -134,11 +126,10 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
     <div class="uhint" id="uh"><span id="uht"></span> <a onclick="goAdmin()" id="uhl"></a><span id="uhr"></span></div>
     <div class="rs" id="res"></div>
   </div>
-
   <div id="adm">
     <div class="ac">
-      <div class="at" id="at"></div>
-      <div class="as" id="as2"></div>
+      <div class="at2" id="at"></div>
+      <div class="as2" id="as2"></div>
       <div class="dz" id="dz" onclick="document.getElementById('fi').click()" ondragover="dzo(event)" ondragleave="dzl()" ondrop="dzd(event)">
         <div class="dzi">📂</div>
         <p><strong id="dzc"></strong> <span id="dzo2"></span></p>
@@ -146,13 +137,11 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
       </div>
       <input type="file" id="fi" accept=".xlsx,.xls" onchange="hf(this.files[0])"/>
       <div class="ast" id="ast"></div>
-      <div class="li" id="li"></div>
+      <div class="li2" id="li"></div>
       <button class="bb" onclick="goSearch()" id="bb"></button>
     </div>
   </div>
-</div>
-
-<script>
+</div><script>
 const TR={
   en:{
     title:"Shift Lookup",gm:"Good morning 👋",ga:"Good afternoon 👋",ge:"Good evening 👋",gn:"Good night 👋",
@@ -188,9 +177,8 @@ const TR={
   }
 };
 
-let L='en', THM='dark', DATA=null, TAB='today';
+let L='en',THM='dark',DATA=null,TAB='today';
 
-// ── THEME ──
 function togTheme(){
   THM=THM==='dark'?'light':'dark';
   document.body.setAttribute('data-theme',THM);
@@ -200,7 +188,6 @@ function togTheme(){
   document.getElementById('tlbl').textContent=THM==='dark'?TR[L].tl2:TR[L].td;
 }
 
-// ── LANGUAGE ──
 function setL(l){
   L=l;
   document.getElementById('modal').style.display='none';
@@ -229,8 +216,7 @@ function applyT(){
   document.getElementById('uhl').textContent=t.hl;
   document.getElementById('uhr').textContent=t.hr;
   document.getElementById('tlbl').textContent=THM==='dark'?t.tl2:t.td;
-  // re-render results if active
-  if(DATA && document.getElementById('res').innerHTML!=='') go(true);
+  if(DATA&&document.getElementById('res').innerHTML!=='')go(true);
 }
 
 function setGreet(){
@@ -239,7 +225,6 @@ function setGreet(){
     h>=5&&h<12?t.gm:h>=12&&h<17?t.ga:h>=17&&h<22?t.ge:t.gn;
 }
 
-// ── VIEWS ──
 function goAdmin(){
   document.getElementById('sv').style.display='none';
   document.getElementById('adm').style.display='block';
@@ -248,13 +233,10 @@ function goSearch(){
   document.getElementById('adm').style.display='none';
   document.getElementById('sv').style.display='block';
 }
-
-// ── DRAG DROP ──
 function dzo(e){e.preventDefault();document.getElementById('dz').classList.add('over');}
 function dzl(){document.getElementById('dz').classList.remove('over');}
 function dzd(e){e.preventDefault();dzl();hf(e.dataTransfer.files[0]);}
 
-// ── FILE HANDLER ──
 function hf(file){
   if(!file)return;
   const ast=document.getElementById('ast');
@@ -269,29 +251,153 @@ function hf(file){
       ast.textContent=TR[L].ok;
       const t=TR[L];
       document.getElementById('li').textContent=
-        `${t.li} ${DATA.people.length} ${t.pp} ${t.fm} ${DATA.monthName} ${DATA.year}`;
+        t.li+' '+DATA.people.length+' '+t.pp+' '+t.fm+' '+DATA.monthName+' '+DATA.year;
       document.getElementById('uh').style.display='none';
     }catch(err){
       ast.className='ast er';
-      ast.textContent='Error reading file: '+err.message;
+      ast.textContent='Error: '+err.message;
     }
   };
   reader.readAsArrayBuffer(file);
-}
-
-// ── EXCEL PARSER ──
-function parseSheet(ws){
+}function parseSheet(ws){
   const range=XLSX.utils.decode_range(ws['!ref']);
   const rows=[];
   for(let r=range.s.r;r<=range.e.r;r++){
     const row=[];
     for(let c=range.s.c;c<=range.e.c;c++){
-      const cell=ws[XLSX.utils.encode_cell({r,c})];
+      const cell=ws[XLSX.utils.encode_cell({r:r,c:c})];
       row.push(cell?String(cell.v).trim():'');
     }
     rows.push(row);
   }
 
-  // Find month/year from row 0
-  let monthNum=new Date().getMonth()+1, year=new Date().getFullYear(), monthName='';
-  const slMonths={januar:1,februar:2,marec:3,april:4,maj:5,junij
+  let monthNum=new Date().getMonth()+1,year=new Date().getFullYear(),monthName='';
+  const r0=rows[0]?rows[0].join(' ').toLowerCase():'';
+  const slM={januar:1,februar:2,marec:3,april:4,maj:5,junij:6,julij:7,avgust:8,september:9,oktober:10,november:11,december:12};
+  const enM={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
+  for(const[k,v] of Object.entries(slM)){if(r0.includes(k)){monthNum=v;break;}}
+  for(const[k,v] of Object.entries(enM)){if(r0.includes(k)){monthNum=v;break;}}
+  const yrM=r0.match(/\d{4}/);
+    if(yrM)year=parseInt(yrM[0]);
+  monthName=TR[L].mo[monthNum-1];
+
+  let hdrRow=-1,nameCol=-1;
+  for(let r=0;r<Math.min(rows.length,5);r++){
+    const idx=rows[r].findIndex(c=>c.toLowerCase()==='ime'||c.toLowerCase()==='name');
+    if(idx!==-1){hdrRow=r;nameCol=idx;break;}
+  }
+  if(hdrRow===-1)throw new Error('Cannot find header row with Ime or Name');
+
+  const dayMap={};
+  for(let c=nameCol+1;c<rows[hdrRow].length;c++){
+    const v=parseInt(rows[hdrRow][c]);
+    if(!isNaN(v)&&v>=1&&v<=31)dayMap[c]=v;
+  }
+
+  const people=[];
+  for(let r=hdrRow+1;r<rows.length;r++){
+    const name=rows[r][nameCol]?rows[r][nameCol].trim():'';
+    if(!name)continue;
+    if(name.length<=3&&name===name.toUpperCase()&&!/\s/.test(name))continue;
+    const shifts=[];
+    for(const[col,day] of Object.entries(dayMap)){
+      const cell=rows[r][parseInt(col)]||'';
+      const parts=cell.trim().split(/\s+/);
+      if(parts.length>=2){
+        const s=parts[0],e=parts[1];
+        if(s.toUpperCase()==='X'||e.toUpperCase()==='X'){
+          shifts.push({day:parseInt(day),isOff:true,isOvernight:false,start:null,end:null});
+        } else {
+          const sh=parseInt(s),eh=parseInt(e);
+          if(!isNaN(sh)&&!isNaN(eh)){
+            const isOvernight=eh<sh||(eh===0&&sh>0)||eh===24;
+            shifts.push({day:parseInt(day),isOff:false,isOvernight:isOvernight,start:sh,end:eh===24?0:eh});
+          }
+        }
+      }
+    }
+    people.push({name:name,shifts:shifts});
+  }
+  return{month:monthNum,year:year,monthName:monthName,people:people};
+}
+
+function go(rerender){
+  if(!rerender){
+    const q=document.getElementById('ni').value.trim();
+    if(!q)return;
+    window._lastQ=q;
+  }
+  const q=window._lastQ||'';
+  const res=document.getElementById('res');
+  if(!DATA){
+    res.innerHTML='<div class="empty"><div class="eico">📂</div><p>'+TR[L].ht+'</p></div>';
+    return;
+  }
+  const match=DATA.people.find(p=>p.name.toUpperCase()===q.toUpperCase());
+  if(!match){
+    res.innerHTML='<div class="empty"><div class="eico">🔍</div><p>'+TR[L].nf+'</p><p style="margin-top:8px;font-size:.8rem;">'+TR[L].ns+'</p></div>';
+    return;
+  }
+  const t=TR[L];
+  const initials=match.name.split(' ').map(function(n){return n[0];}).join('').toUpperCase().slice(0,2);
+  const today=new Date();
+  const todayDay=today.getDate();
+  const isCurrentMonth=(DATA.month===today.getMonth()+1&&DATA.year===today.getFullYear());
+  const todayShift=isCurrentMonth?match.shifts.find(function(s){return s.day===todayDay;}):null;
+
+  let html='<div class="ph"><div class="av">'+initials+'</div><div><div class="pn">'+match.name+'</div><div class="pm">'+t.fm+' '+t.mo[DATA.month-1]+' '+DATA.year+'</div></div></div>';
+
+  if(isCurrentMonth&&todayShift){
+    html+='<div class="tcard">';
+    html+='<div class="tlbl">'+t.tl+' — '+t.dw[today.getDay()]+' '+todayDay+' '+t.mo[DATA.month-1]+'</div>';
+    if(todayShift.isOff){
+      html+='<div class="tst">'+t.off+'</div>';
+    } else {
+      html+='<div class="tst">'+t.wk+(todayShift.isOvernight?'<span class="bdg">'+t.on+'</span>':'')+'</div>';
+      html+='<div class="ttm">'+pad(todayShift.start)+':00 → '+pad(todayShift.end)+':00'+(todayShift.isOvernight?' (+1 day)':'')+'</div>';
+    }
+    html+='</div>';
+  }
+
+  html+='<div class="tabs">';
+  html+='<button class="tab'+(TAB==='today'?' on':'')+'" onclick="switchTab(\'today\')">'+t.tt+'</button>';
+  html+='<button class="tab'+(TAB==='upcoming'?' on':'')+'" onclick="switchTab(\'upcoming\')">'+t.tu+'</button>';
+  html+='<button class="tab'+(TAB==='old'?' on':'')+'" onclick="switchTab(\'old\')">'+t.to+'</button>';
+  html+='</div>';
+
+  const workShifts=match.shifts.filter(function(s){return !s.isOff;});
+  let list=[];
+  if(TAB==='today'){
+    list=isCurrentMonth?match.shifts.filter(function(s){return s.day===todayDay;}):[];
+  } else if(TAB==='upcoming'){
+    list=isCurrentMonth?workShifts.filter(function(s){return s.day>todayDay;}):workShifts;
+  } else {
+    list=isCurrentMonth?workShifts.filter(function(s){return s.day<todayDay;}):[];
+  }
+
+  if(!list.length){
+    const msg=TAB==='upcoming'?t.nu:TAB==='old'?t.no:t.nt;
+    html+='<div class="empty"><div class="eico">📅</div><p>'+msg+'</p></div>';
+  } else {
+    html+='<div class="slist">';
+    for(let i=0;ist.length;i++){
+      const s=list[i];
+      const d=new Date(DATA.year,DATA.month-1,s.day);
+      const dow=t.dw[d.getDay()];
+      if(s.isOff){
+        html+='<div class="sc off"><div class="dot do"></div><div class="dc"><div class="dd">'+dow+' '+s.day+' '+t.mo[DATA.month-1]+'</div></div><div class="dt">'+t.off+'</div></div>';
+      } else {
+        const cls=s.isOvernight?'dn':'dw';
+        html+='<div class="sc"><div class="dot '+cls+'"></div><div class="dc"><div class="dd">'+dow+' '+s.day+' '+t.mo[DATA.month-1]+'</div></div><div><div class="dt">'+pad(s.start)+':00 → '+pad(s.end)+':00</div>'+(s.isOvernight?'<div class="dn2">'+t.on+'</div>':'')+'</div></div>';
+      }
+    }
+    html+='</div>';
+  }
+  res.innerHTML=html;
+}
+
+function switchTab(tab){TAB=tab;go(true);}
+function pad(n){return n===null?'--':String(n).padStart(2,'0');}
+</script>
+</body>
+</html>
