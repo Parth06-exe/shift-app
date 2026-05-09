@@ -39,10 +39,10 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .sb input:focus{border-color:var(--accent)}
 .sb button{padding:13px 22px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:.92rem;font-weight:600;cursor:pointer;transition:background .2s}
 .sb button:hover{background:var(--accent2)}
-.loading{max-width:580px;margin:12px auto 0;padding:0 20px;text-align:center;font-size:.82rem;color:var(--sub)}
+.loadmsg{max-width:580px;margin:12px auto 0;padding:0 20px;text-align:center;font-size:.82rem;color:var(--sub)}
 .rs{max-width:680px;margin:30px auto;padding:0 20px 70px}
 .ph{display:flex;align-items:center;gap:14px;margin-bottom:18px}
-.av{width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700}
+.av{width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;flex-shrink:0}
 .pn{font-size:1.15rem;font-weight:700}
 .pm{font-size:.8rem;color:var(--sub);margin-top:2px}
 .tabs{display:flex;gap:10px;margin-bottom:18px}
@@ -68,64 +68,81 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 @media(max-width:480px){.mbox{width:92vw;padding:26px 16px}.lbtn{width:105px;height:80px}.sg{font-size:1.2rem}.tab{font-size:.78rem;padding:9px 6px}}
 </style>
 </head>
-<body data-theme="dark">
-<div id="modal">
+<body data-theme="dark"><div id="modal">
   <div class="mbox">
     <div class="mtop">
-      <button class="ttog" onclick="togTheme()"><span id="ticon">☀️</span><span id="tlbl">Light</span></button>
+      <button class="ttog" onclick="togTheme()">
+        <span id="ticon">☀️</span><span id="tlbl">Light</span>
+      </button>
     </div>
     <div class="micon">🗓️</div>
     <div class="mtitle">Shift Lookup | Pregled izmen</div>
     <div class="msub">Choose language · Izberite jezik</div>
     <div class="lopts">
-      <button class="lbtn" onclick="setL('en')"><span class="lcode">EN</span><span class="lname">English</span></button>
-      <button class="lbtn" onclick="setL('sl')"><span class="lcode">SI</span><span class="lname">Slovenščina</span></button>
+      <button class="lbtn" onclick="setL('en')">
+        <span class="lcode">EN</span>
+        <span class="lname">English</span>
+      </button>
+      <button class="lbtn" onclick="setL('sl')">
+        <span class="lcode">SI</span>
+        <span class="lname">Slovenščina</span>
+      </button>
     </div>
   </div>
-</div><div id="app">
+</div>
+
+<div id="app">
   <header>
-    <div class="hl"><span class="hicon">🗓️</span><span class="htitle" id="htitle">Shift Lookup</span></div>
+    <div class="hl">
+      <span class="hicon">🗓️</span>
+      <span class="htitle" id="htitle">Shift Lookup</span>
+    </div>
     <div class="hr">
       <button class="hbtn" id="ben" onclick="setL('en')">EN</button>
       <button class="hbtn" id="bsl" onclick="setL('sl')">SI</button>
       <button class="hbtn" id="htheme" onclick="togTheme()">☀️</button>
     </div>
   </header>
+
   <div id="sv">
     <div class="ss">
       <div class="sg" id="greet"></div>
-      <div class="ssub" id="ssub"></div>
+      <div class="ssub" id="ssub">Enter your name to see your shifts</div>
       <div class="sb">
-        <input id="ni" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')go()">
+        <input id="ni" type="text" autocomplete="off" placeholder="Your name..."
+          onkeydown="if(event.key==='Enter')go()">
         <button onclick="go()" id="sbtn">Search</button>
       </div>
     </div>
-    <div class="loading" id="loadmsg"></div>
+    <div class="loadmsg" id="loadmsg"></div>
     <div class="rs" id="res"></div>
   </div>
 </div><script>
 const TR={
-  en:{title:'Shift Lookup',gm:'Good morning, ',ga:'Good afternoon, ',ge:'Good evening, ',gn:'Good night, ',
-      sub:'Enter your name to see your shifts',ph:'Your name...',sb:'Search',
-      tt:'Today',tu:'Upcoming',to:'Old Shifts',tl:'TODAY',wk:'Working',off:'Day Off',on:'ends next day',
-      nt:'No shift today',nu:'No upcoming shifts',no:'No past shifts',
-      nf:'Name not found in the schedule.',ns:'Check spelling or ask your supervisor.',
-      tl2:'Light',td:'Dark',loading:'Loading schedule...',loaded:'Schedule ready',
-      mo:['January','February','March','April','May','June','July','August','September','October','November','December'],
-      dw:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']},
-  sl:{title:'Pregled izmen',gm:'Dobro jutro, ',ga:'Dober dan, ',ge:'Dober večer, ',gn:'Lahko noč, ',
-      sub:'Vnesite ime za ogled vaših izmen',ph:'Vaše ime...',sb:'Išči',
-      tt:'Danes',tu:'Prihajajoče',to:'Stare izmene',tl:'DANES',wk:'Delam',off:'Prost dan',on:'konča naslednji dan',
-      nt:'Danes ni izmene',nu:'Ni prihajajočih izmen',no:'Ni starih izmen',
-      nf:'Ime ni najdeno v urniku.',ns:'Preverite črkovanje ali vprašajte nadrejenega.',
-      tl2:'Svetla',td:'Temna',loading:'Nalagam urnik...',loaded:'Urnik pripravljen',
-      mo:['Januar','Februar','Marec','April','Maj','Junij','Julij','Avgust','September','Oktober','November','December'],
-      dw:['Ned','Pon','Tor','Sre','Čet','Pet','Sob']}
+  en:{
+    title:'Shift Lookup',gm:'Good morning, ',ga:'Good afternoon, ',ge:'Good evening, ',gn:'Good night, ',
+    sub:'Enter your name to see your shifts',ph:'Your name...',sb:'Search',
+    tt:'Today',tu:'Upcoming',to:'Old Shifts',tl:'TODAY',wk:'Working',off:'Day Off',on:'ends next day',
+    nt:'No shift today',nu:'No upcoming shifts',no:'No past shifts',
+    nf:'Name not found in the schedule.',ns:'Check spelling or ask your supervisor.',
+    tl2:'Light',td:'Dark',loading:'Loading schedule...',loaded:'Schedule ready ✓',
+    mo:['January','February','March','April','May','June','July','August','September','October','November','December'],
+    dw:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+  },
+  sl:{
+    title:'Pregled izmen',gm:'Dobro jutro, ',ga:'Dober dan, ',ge:'Dober večer, ',gn:'Lahko noč, ',
+    sub:'Vnesite ime za ogled vaših izmen',ph:'Vaše ime...',sb:'Išči',
+    tt:'Danes',tu:'Prihajajoče',to:'Stare izmene',tl:'DANES',wk:'Delam',off:'Prost dan',on:'konča naslednji dan',
+    nt:'Danes ni izmene',nu:'Ni prihajajočih izmen',no:'Ni starih izmen',
+    nf:'Ime ni najdeno v urniku.',ns:'Preverite črkovanje ali vprašajte nadrejenega.',
+    tl2:'Svetla',td:'Temna',loading:'Nalagam urnik...',loaded:'Urnik pripravljen ✓',
+    mo:['Januar','Februar','Marec','April','Maj','Junij','Julij','Avgust','September','Oktober','November','December'],
+    dw:['Ned','Pon','Tor','Sre','Čet','Pet','Sob']
+  }
 };
 
 const SHEET_URL='https://raw.githubusercontent.com/Parth06-exe/shift-app/main/shift.xlsx';
-
-let L='en',THM='dark',DATA=null,TAB='today';
+let L='en', THM='dark', DATA=null, TAB='today', LAST_Q='';
 
 function togTheme(){
   THM=THM==='dark'?'light':'dark';
@@ -140,10 +157,12 @@ function setL(l){
   L=l;
   document.getElementById('modal').style.display='none';
   document.getElementById('app').style.display='block';
-  applyT();setGreet();
+  applyT();
+  setGreet();
   document.getElementById('ben').classList.toggle('on',L==='en');
   document.getElementById('bsl').classList.toggle('on',L==='sl');
   if(!DATA) loadSchedule();
+  else if(LAST_Q) go(true);
 }
 
 function applyT(){
@@ -153,28 +172,29 @@ function applyT(){
   document.getElementById('ni').placeholder=t.ph;
   document.getElementById('sbtn').textContent=t.sb;
   document.getElementById('tlbl').textContent=THM==='dark'?t.tl2:t.td;
-  if(DATA) go(true);
+  if(LAST_Q) go(true);
 }
 
 function setGreet(){
-  const h=new Date().getHours(),t=TR[L];
-  document.getElementById('greet').textContent=h>=5&&h<12?t.gm:h<17?t.ga:h<22?t.ge:t.gn;
+  const h=new Date().getHours(), t=TR[L];
+  document.getElementById('greet').textContent=
+    h>=5&&h<12?t.gm:h>=12&&h<17?t.ga:h>=17&&h<22?t.ge:t.gn;
 }
 
 function loadSchedule(){
   const msg=document.getElementById('loadmsg');
   msg.textContent=TR[L].loading;
   fetch(SHEET_URL)
-    .then(r=>r.arrayBuffer())
+    .then(r=>{if(!r.ok)throw new Error('Network error');return r.arrayBuffer();})
     .then(buf=>{
       const wb=XLSX.read(buf,{type:'array'});
       const ws=wb.Sheets[wb.SheetNames[0]];
       DATA=parseSheet(ws);
-      msg.textContent='✓ '+TR[L].loaded;
-      setTimeout(()=>msg.textContent='',2000);
+      msg.textContent=TR[L].loaded;
+      setTimeout(()=>{msg.textContent='';},2500);
     })
-    .catch(()=>{
-      msg.textContent='⚠️ Could not load schedule. Check your internet connection.';
+    .catch(err=>{
+      msg.textContent='⚠️ Could not load schedule. Please check your connection.';
     });
 }
 
@@ -189,107 +209,104 @@ function parseSheet(ws){
     }
     rows.push(row);
   }
-  let monthNum=new Date().getMonth()+1,year=new Date().getFullYear(),monthName='';
   const slM={januar:1,februar:2,marec:3,april:4,maj:5,junij:6,julij:7,avgust:8,september:9,oktober:10,november:11,december:12};
+  let monthNum=new Date().getMonth()+1, year=new Date().getFullYear();
   const r0=rows[0].join(' ').toLowerCase();
   for(const[k,v] of Object.entries(slM)){if(r0.includes(k)){monthNum=v;break;}}
-  const ym=rows[0].join(' ').match(/\d{4}/);if(ym)year=parseInt(ym[0]);
-  monthName=(TR.en.mo[monthNum-1]||'');
+  const ym=rows[0].join(' ').match(/\d{4}/);
+  if(ym) year=parseInt(ym[0]);
 
-  let headerRow=-1,nameCol=-1;
+  let headerRow=-1, nameCol=-1;
   for(let i=0;i<rows.length;i++){
     const idx=rows[i].findIndex(c=>c.toLowerCase()==='ime');
     if(idx>=0){headerRow=i;nameCol=idx;break;}
   }
-  if(headerRow<0)return null;
+  if(headerRow<0) return null;
 
   const dayRow=rows[headerRow];
   const people=[];
   for(let r=headerRow+2;r<rows.length;r++){
     const row=rows[r];
-    const name=row[nameCol]||'';
-    if(!name||name.startsWith('---'))continue;
+    const name=(row[nameCol]||'').trim();
+    if(!name||name.startsWith('---')||name==='') continue;
     const shifts={};
     for(let c=nameCol+1;c<dayRow.length;c++){
-      const dayStr=dayRow[c];
-      const day=parseInt(dayStr);
-      if(!day)continue;
-      const cell=row[c]||'';
+      const day=parseInt(dayRow[c]);
+      if(!day) continue;
+      const cell=(row[c]||'').trim();
       const parts=cell.split(/\s+/);
-      if(parts.length>=2&&parts[0]!='X'){
-        const start=parseInt(parts[0]),end=parseInt(parts[1]);
-        const overnight=start>=13&&end<=6;
-        shifts[day]={start,end,overnight,off:false};
+      if(parts.length>=2 && parts[0]!=='X' && parts[1]!=='X'){
+        const start=parseInt(parts[0]), end=parseInt(parts[1]);
+        if(!isNaN(start)&&!isNaN(end)){
+          const overnight=(start>=13 && end<=6);
+          shifts[day]={start,end,overnight,off:false};
+        } else {
+          shifts[day]={off:true};
+        }
       } else {
         shifts[day]={off:true};
       }
     }
     people.push({name,shifts});
   }
-  return{people,monthNum,year,monthName};
+  return{people,monthNum,year,monthName:TR.en.mo[monthNum-1]||''};
 }
-
+</script><script>
 function go(silent){
-  if(!DATA){
-    document.getElementById('res').innerHTML='';
-    return;
-  }
+  if(!DATA) return;
   const q=(document.getElementById('ni').value||'').trim().toLowerCase();
-  if(!q&&!silent)return;
+  if(!q && !silent) return;
+  if(q) LAST_Q=q;
+  const searchQ=q||LAST_Q;
   const t=TR[L];
-  const found=DATA.people.find(p=>p.name.toLowerCase().includes(q)||q.includes(p.name.toLowerCase().split(' ')[0].toLowerCase()));
   const res=document.getElementById('res');
+
+  const found=DATA.people.find(p=>{
+    const pn=p.name.toLowerCase();
+    return pn.includes(searchQ)||searchQ.split(' ').some(w=>w.length>1&&pn.includes(w));
+  });
+
   if(!found){
-    if(q) res.innerHTML=`<div class="empty"><div class="eico">🔍</div><div>${t.nf}</div><div style="font-size:.82rem;margin-top:6px;color:var(--sub)">${t.ns}</div></div>`;
+    if(searchQ) res.innerHTML=`<div class="empty"><div class="eico">🔍</div><div>${t.nf}</div><div style="font-size:.82rem;margin-top:6px;color:var(--sub)">${t.ns}</div></div>`;
     return;
   }
-  const initials=found.name.split(' ').map(w=>w[0]).join('').slice(0,2);
+
   const today=new Date();
   const todayDay=today.getDate();
   const todayMonth=today.getMonth()+1;
   const todayYear=today.getFullYear();
-  const isCurrentMonth=DATA.monthNum===todayMonth&&DATA.year===todayYear;
+  const isCurrentMonth=(DATA.monthNum===todayMonth && DATA.year===todayYear);
+  const initials=found.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
 
-  function renderTab(){
-    const days=Object.keys(found.shifts).map(Number).sort((a,b)=>a-b);
-    let todayHTML='',upHTML='',oldHTML='';
+  function makeCard(d){
+    const s=found.shifts[d];
+    const date=new Date(DATA.year,DATA.monthNum-1,d);
+    const dow=t.dw[date.getDay()];
+    const mo=TR.en.mo[DATA.monthNum-1];
+    const dateStr=`${d} ${mo}`;
+    if(s.off) return `<div class="sc off"><div class="dot do"></div><div class="dc"><div class="dd">${dateStr}</div><div class="dw2">${dow}</div></div><div class="dt">${t.off}</div></div>`;
+    const over=s.overnight?`<div class="dn2">⏱ ${t.on}</div>`:'';
+    const cls=s.overnight?'dn':'dw';
+    return `<div class="sc"><div class="dot ${cls}"></div><div class="dc"><div class="dd">${dateStr}</div><div class="dw2">${dow}</div></div><div><div class="dt">${s.start}:00 – ${s.end}:00</div>${over}</div></div>`;
+  }
 
-    if(isCurrentMonth){
-      const ts=found.shifts[todayDay];
-      if(ts){
-        if(ts.off){
-          todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">🌿 ${t.off}</div></div>`;
-        } else {
-          const over=ts.overnight?`<span class="bdg">⏱ ${t.on}</span>`:'';
-          todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">✅ ${t.wk}${over}</div><div class="ttm">${ts.start}:00 – ${ts.end}:00</div></div>`;
-        }
+  const days=Object.keys(found.shifts).map(Number).sort((a,b)=>a-b);
+
+  let todayHTML='', upHTML='', oldHTML='';
+
+  if(isCurrentMonth){
+    const ts=found.shifts[todayDay];
+    if(ts){
+      if(ts.off){
+        todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">🌿 ${t.off}</div></div>`;
       } else {
-        todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">—</div></div>`;
+        const over=ts.overnight?`<span class="bdg">⏱ ${t.on}</span>`:'';
+        todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">✅ ${t.wk}${over}</div><div class="ttm">${ts.start}:00 – ${ts.end}:00</div></div>`;
       }
-    }
-
-    const makeCards=arr=>arr.map(d=>{
-      const s=found.shifts[d];
-      const date=new Date(DATA.year,DATA.monthNum-1,d);
-      const dow=t.dw[date.getDay()];
-      const dateStr=`${d} ${TR.en.mo[DATA.monthNum-1]}`;
-      if(s.off) return `<div class="sc off"><div class="dot do"></div><div class="dc"><div class="dd">${dateStr}</div><div class="dw2">${dow}</div></div><div class="dt">${t.off}</div></div>`;
-      const over=s.overnight?`<div class="dn2">⏱ ${t.on}</div>`:'';
-      return `<div class="sc"><div class="dot ${s.overnight?'dn':'dw'}"></div><div class="dc"><div class="dd">${dateStr}</div><div class="dw2">${dow}</div></div><div><div class="dt">${s.start}:00 – ${s.end}:00</div>${over}</div></div>`;
-    }).join('');
-
-    if(isCurrentMonth){
-      const upcoming=days.filter(d=>d>todayDay);
-      const old=days.filter(d=>d<todayDay);
-      upHTML=upcoming.length?`<div class="slist">${makeCards(upcoming)}</div>`:`<div class="empty"><div class="eico">📅</div>${t.nu}</div>`;
-      oldHTML=old.length?`<div class="slist">${makeCards(old)}</div>`:`<div class="empty"><div class="eico">📂</div>${t.no}</div>`;
     } else {
-      upHTML=`<div class="slist">${makeCards(days)}</div>`;
-      oldHTML=upHTML;
+      todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">🌿 ${t.off}</div></div>`;
     }
-
-    const tabs=`<div class="tabs">
-      <button class="tab ${TAB==='today'?'on':''}" onclick="TAB='today';go(true)">${t.tt}</button>
-      <button class="tab ${TAB==='upcoming'?'on':''}" onclick="TAB='upcoming';go(true)">${t.tu}</button>
-      <button class="tab ${TAB==='old'?'on':''}" onclick="TAB='old';go(true)">${t.to}</button>
-    
+    const up=days.filter(d=>d>todayDay);
+    const old=days.filter(d=>d<todayDay);
+    upHTML=up.length?`<div class="slist">${up.map(makeCard).join('')}</div>`:`<div class="empty"><div class="eico">📅</div>${t.nu}</div>`;
+    oldHTML=old.length?`<div class="slist">${old.map(makeCard).join('')}</div>`:`<div class="empty"><div class
