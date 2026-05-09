@@ -1,92 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Shift Lookup · Pregled izmen</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shift Lookup | Pregled izmen</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#f4f4f4;--surface:#fff;--text:#1a1a1a;--sub:#555;--accent:#008080;--accent2:#005f5f;--border:#ddd;--card:#fff;--off:#f0f0f0;--modal:rgba(0,0,0,0.55);--lb:#1a1a1a;--lt:#fff;--lbo:#444;}
-[data-theme="dark"]{--bg:#121212;--surface:#1e1e1e;--text:#f0f0f0;--sub:#aaa;--accent:#00b3b3;--accent2:#009090;--border:#333;--card:#252525;--off:#1a1a1a;--modal:rgba(0,0,0,0.85);--lb:#1a1a1a;--lt:#fff;--lbo:#555;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;}
-#modal{position:fixed;inset:0;background:var(--modal);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(8px);}
-.mbox{background:var(--surface);border-radius:22px;padding:36px 32px;width:320px;text-align:center;box-shadow:0 10px 50px rgba(0,0,0,0.4);}
-.mtop{display:flex;justify-content:flex-end;margin-bottom:14px;}
-.ttog{background:none;border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;font-size:.78rem;color:var(--text);display:flex;align-items:center;gap:5px;}
-.micon{font-size:2.8rem;margin-bottom:8px;}
-.mtitle{font-size:1.05rem;font-weight:700;margin-bottom:3px;}
-.msub{font-size:.8rem;color:var(--sub);margin-bottom:26px;}
-.lopts{display:flex;gap:14px;justify-content:center;}
-.lbtn{background:var(--lb);color:var(--lt);border:2px solid var(--lbo);border-radius:14px;width:120px;height:88px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:border-color .2s,transform .15s;}
-.lbtn:hover{border-color:var(--accent);transform:translateY(-3px);}
-.lcode{font-size:1.9rem;font-weight:800;letter-spacing:2px;}
-.lname{font-size:.68rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;}
-#app{display:none;}
-header{background:var(--surface);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.hl{display:flex;align-items:center;gap:9px;}
-.hicon{font-size:1.4rem;}
-.htitle{font-size:.95rem;font-weight:700;color:var(--accent);}
-.hr{display:flex;gap:8px;align-items:center;}
-.hbtn{background:none;border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:.76rem;cursor:pointer;color:var(--text);transition:border-color .2s;}
-.hbtn:hover{border-color:var(--accent);}
-.hbtn.on{border-color:var(--accent);color:var(--accent);font-weight:700;}
-.ss{max-width:580px;margin:44px auto 0;padding:0 20px;text-align:center;}
-.sg{font-size:1.55rem;font-weight:700;margin-bottom:6px;}
-.ssub{font-size:.88rem;color:var(--sub);margin-bottom:22px;}
-.sb{display:flex;gap:10px;}
-.sb input{flex:1;padding:13px 18px;border:2px solid var(--border);border-radius:12px;font-size:1rem;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;}
-.sb input:focus{border-color:var(--accent);}
-.sb button{padding:13px 22px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:.92rem;font-weight:600;cursor:pointer;transition:background .2s;}
-.sb button:hover{background:var(--accent2);}
-.uhint{max-width:580px;margin:10px auto 0;padding:0 20px;text-align:center;font-size:.8rem;color:var(--sub);}
-.uhint a{color:var(--accent);cursor:pointer;text-decoration:underline;}
-.rs{max-width:680px;margin:30px auto;padding:0 20px 70px;}
-.ph{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
-.av{width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;}
-.pn{font-size:1.15rem;font-weight:700;}
-.pm{font-size:.8rem;color:var(--sub);margin-top:2px;}
-.tabs{display:flex;gap:10px;margin-bottom:18px;}
-.tab{flex:1;padding:10px;border-radius:10px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;}
-.tab.on{background:var(--accent);color:#fff;border-color:var(--accent);}
-.tcard{border-radius:16px;padding:20px 22px;margin-bottom:14px;border:2px solid var(--accent);background:var(--card);}
-.tlbl{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:7px;}
-.tst{font-size:1.35rem;font-weight:700;}
-.ttm{font-size:.92rem;color:var(--sub);margin-top:4px;}
-.bdg{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;background:#ff8c00;color:#fff;}
-.slist{display:flex;flex-direction:column;gap:9px;}
-.sc{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px 17px;display:flex;align-items:center;gap:13px;}
-.sc.off{background:var(--off);opacity:.65;}
-.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.dw{background:var(--accent);}
-.do{background:#888;}
-.dn{background:#ff8c00;}
-.dc{min-width:100px;}
-.dd{font-size:.8rem;color:var(--sub);}
-.dw2{font-size:.72rem;color:var(--sub);margin-top:1px;}
-.dt{font-size:.92rem;font-weight:600;}
-.dn2{font-size:.72rem;color:#ff8c00;margin-top:2px;}
-.empty{text-align:center;padding:48px 20px;color:var(--sub);}
-.eico{font-size:3rem;margin-bottom:12px;}
-#adm{display:none;max-width:480px;margin:40px auto;padding:0 20px 60px;}
-.ac{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;}
-.at2{font-size:1.05rem;font-weight:700;margin-bottom:5px;}
-.as2{font-size:.83rem;color:var(--sub);margin-bottom:20px;}
-.dz{border:2px dashed var(--border);border-radius:12px;padding:34px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:12px;}
-.dz:hover,.dz.over{border-color:var(--accent);background:rgba(0,128,128,.06);}
-.dzi{font-size:2rem;margin-bottom:8px;}
-.dz p{font-size:.85rem;color:var(--sub);}
-.dz strong{color:var(--accent);}
-#fi{display:none;}
-.ast{font-size:.83rem;margin-top:10px;padding:10px 14px;border-radius:8px;display:none;}
-.ast.ok{background:#d4edda;color:#155724;display:block;}
-.ast.er{background:#f8d7da;color:#721c24;display:block;}
-[data-theme="dark"] .ast.ok{background:#1a3a1a;color:#a3d9a5;}
-[data-theme="dark"] .ast.er{background:#3a1a1a;color:#f5a5a5;}
-.li2{font-size:.78rem;color:var(--sub);margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
-.bb{margin-top:16px;width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--text);font-size:.88rem;cursor:pointer;transition:border-color .2s;}
-.bb:hover{border-color:var(--accent);}
-@media(max-width:480px){.mbox{width:92vw;padding:26px 16px;}.lbtn{width:105px;height:80px;}.sg{font-size:1.2rem;}.tab{font-size:.78rem;padding:9px 6px;}}
+:root{--bg:#f4f4f4;--surface:#fff;--text:#1a1a1a;--sub:#555;--accent:#008080;--accent2:#005f5f;--border:#ddd;--card:#fff;--off:#f0f0f0;--modal:rgba(0,0,0,0.55);--lb:#1a1a1a;--lt:#fff;--lbo:#444}
+[data-theme=dark]{--bg:#121212;--surface:#1e1e1e;--text:#f0f0f0;--sub:#aaa;--accent:#00b3b3;--accent2:#009090;--border:#333;--card:#252525;--off:#1a1a1a;--modal:rgba(0,0,0,0.85);--lb:#1a1a1a;--lt:#fff;--lbo:#555}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s}
+#modal{position:fixed;inset:0;background:var(--modal);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(8px)}
+.mbox{background:var(--surface);border-radius:22px;padding:36px 32px;width:320px;text-align:center;box-shadow:0 10px 50px rgba(0,0,0,0.4)}
+.mtop{display:flex;justify-content:flex-end;margin-bottom:14px}
+.ttog{background:none;border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;font-size:.78rem;color:var(--text);display:flex;align-items:center;gap:5px}
+.micon{font-size:2.8rem;margin-bottom:8px}
+.mtitle{font-size:1.05rem;font-weight:700;margin-bottom:3px}
+.msub{font-size:.8rem;color:var(--sub);margin-bottom:26px}
+.lopts{display:flex;gap:14px;justify-content:center}
+.lbtn{background:var(--lb);color:var(--lt);border:2px solid var(--lbo);border-radius:14px;width:120px;height:88px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:border-color .2s,transform .15s}
+.lbtn:hover{border-color:var(--accent);transform:translateY(-3px)}
+.lcode{font-size:1.9rem;font-weight:800;letter-spacing:2px}
+.lname{font-size:.68rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px}
+#app{display:none}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hl{display:flex;align-items:center;gap:9px}
+.hicon{font-size:1.4rem}
+.htitle{font-size:.95rem;font-weight:700;color:var(--accent)}
+.hr{display:flex;gap:8px;align-items:center}
+.hbtn{background:none;border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:.76rem;cursor:pointer;color:var(--text);transition:border-color .2s}
+.hbtn:hover{border-color:var(--accent)}
+.hbtn.on{border-color:var(--accent);color:var(--accent);font-weight:700}
+.ss{max-width:580px;margin:44px auto 0;padding:0 20px;text-align:center}
+.sg{font-size:1.55rem;font-weight:700;margin-bottom:6px}
+.ssub{font-size:.88rem;color:var(--sub);margin-bottom:22px}
+.sb{display:flex;gap:10px}
+.sb input{flex:1;padding:13px 18px;border:2px solid var(--border);border-radius:12px;font-size:1rem;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s}
+.sb input:focus{border-color:var(--accent)}
+.sb button{padding:13px 22px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:.92rem;font-weight:600;cursor:pointer;transition:background .2s}
+.sb button:hover{background:var(--accent2)}
+.loading{max-width:580px;margin:12px auto 0;padding:0 20px;text-align:center;font-size:.82rem;color:var(--sub)}
+.rs{max-width:680px;margin:30px auto;padding:0 20px 70px}
+.ph{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.av{width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700}
+.pn{font-size:1.15rem;font-weight:700}
+.pm{font-size:.8rem;color:var(--sub);margin-top:2px}
+.tabs{display:flex;gap:10px;margin-bottom:18px}
+.tab{flex:1;padding:10px;border-radius:10px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
+.tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tcard{border-radius:16px;padding:20px 22px;margin-bottom:14px;border:2px solid var(--accent);background:var(--card)}
+.tlbl{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:7px}
+.tst{font-size:1.35rem;font-weight:700}
+.ttm{font-size:.92rem;color:var(--sub);margin-top:4px}
+.bdg{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;background:#ff8c00;color:#fff}
+.slist{display:flex;flex-direction:column;gap:9px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px 17px;display:flex;align-items:center;gap:13px}
+.sc.off{background:var(--off);opacity:.65}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dw{background:var(--accent)}.do{background:#888}.dn{background:#ff8c00}
+.dc{min-width:100px}
+.dd{font-size:.8rem;color:var(--sub)}
+.dw2{font-size:.72rem;color:var(--sub);margin-top:1px}
+.dt{font-size:.92rem;font-weight:600}
+.dn2{font-size:.72rem;color:#ff8c00;margin-top:2px}
+.empty{text-align:center;padding:48px 20px;color:var(--sub)}
+.eico{font-size:3rem;margin-bottom:12px}
+@media(max-width:480px){.mbox{width:92vw;padding:26px 16px}.lbtn{width:105px;height:80px}.sg{font-size:1.2rem}.tab{font-size:.78rem;padding:9px 6px}}
 </style>
 </head>
 <body data-theme="dark">
@@ -95,23 +74,21 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
     <div class="mtop">
       <button class="ttog" onclick="togTheme()"><span id="ticon">☀️</span><span id="tlbl">Light</span></button>
     </div>
-    <div class="micon">📅</div>
-    <div class="mtitle">Shift Lookup · Pregled izmen</div>
-    <div class="msub">Choose language / Izberite jezik</div>
+    <div class="micon">🗓️</div>
+    <div class="mtitle">Shift Lookup | Pregled izmen</div>
+    <div class="msub">Choose language · Izberite jezik</div>
     <div class="lopts">
       <button class="lbtn" onclick="setL('en')"><span class="lcode">EN</span><span class="lname">English</span></button>
       <button class="lbtn" onclick="setL('sl')"><span class="lcode">SI</span><span class="lname">Slovenščina</span></button>
     </div>
   </div>
-</div>
-<div id="app">
+</div><div id="app">
   <header>
-    <div class="hl"><span class="hicon">📅</span><span class="htitle" id="htitle">Shift Lookup</span></div>
+    <div class="hl"><span class="hicon">🗓️</span><span class="htitle" id="htitle">Shift Lookup</span></div>
     <div class="hr">
       <button class="hbtn" id="ben" onclick="setL('en')">EN</button>
       <button class="hbtn" id="bsl" onclick="setL('sl')">SI</button>
-      <button class="hbtn" onclick="togTheme()" id="htheme">☀️</button>
-      <button class="hbtn" onclick="goAdmin()">⚙️ <span id="hadmlbl">Admin</span></button>
+      <button class="hbtn" id="htheme" onclick="togTheme()">☀️</button>
     </div>
   </header>
   <div id="sv">
@@ -119,63 +96,34 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
       <div class="sg" id="greet"></div>
       <div class="ssub" id="ssub"></div>
       <div class="sb">
-        <input id="ni" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')go()"/>
+        <input id="ni" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')go()">
         <button onclick="go()" id="sbtn">Search</button>
       </div>
     </div>
-    <div class="uhint" id="uh"><span id="uht"></span> <a onclick="goAdmin()" id="uhl"></a><span id="uhr"></span></div>
+    <div class="loading" id="loadmsg"></div>
     <div class="rs" id="res"></div>
-  </div>
-  <div id="adm">
-    <div class="ac">
-      <div class="at2" id="at"></div>
-      <div class="as2" id="as2"></div>
-      <div class="dz" id="dz" onclick="document.getElementById('fi').click()" ondragover="dzo(event)" ondragleave="dzl()" ondrop="dzd(event)">
-        <div class="dzi">📂</div>
-        <p><strong id="dzc"></strong> <span id="dzo2"></span></p>
-        <p id="dzh" style="margin-top:5px;font-size:.75rem;"></p>
-      </div>
-      <input type="file" id="fi" accept=".xlsx,.xls" onchange="hf(this.files[0])"/>
-      <div class="ast" id="ast"></div>
-      <div class="li2" id="li"></div>
-      <button class="bb" onclick="goSearch()" id="bb"></button>
-    </div>
   </div>
 </div><script>
 const TR={
-  en:{
-    title:"Shift Lookup",gm:"Good morning 👋",ga:"Good afternoon 👋",ge:"Good evening 👋",gn:"Good night 👋",
-    sub:"Enter your name to see your shifts",ph:"Your name...",sb:"Search",
-    ht:"No schedule loaded.",hl:"Upload Excel file",hr:" to get started.",
-    at:"Upload Shift Schedule",as:"Upload your monthly .xlsx file. The schedule updates instantly.",
-    dc:"Click to choose",dor:"or drag & drop",dh:"Supports .xlsx files",
-    bb:"← Back",al:"Admin",
-    tt:"Today",tu:"Upcoming",to:"Old Shifts",
-    tl:"TODAY",wk:"Working",off:"Day Off",on:"ends next day",
-    nt:"No shift today",nu:"No upcoming shifts",no:"No past shifts",
-    nf:"Name not found in the schedule.",ns:"Check spelling or ask your supervisor.",
-    ok:"Schedule loaded successfully!",li:"Loaded",pp:"people,",fm:"for",
-    tl2:"Light",td:"Dark",
-    mo:["January","February","March","April","May","June","July","August","September","October","November","December"],
-    dw:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
-  },
-  sl:{
-    title:"Pregled izmen",gm:"Dobro jutro 👋",ga:"Dober dan 👋",ge:"Dober večer 👋",gn:"Lahko noč 👋",
-    sub:"Vnesite ime za ogled vaših izmen",ph:"Vaše ime...",sb:"Išči",
-    ht:"Urnik ni naložen.",hl:"Naložite Excel datoteko",hr:" za začetek.",
-    at:"Naložite urnik izmen",as:"Naložite mesečno .xlsx datoteko. Urnik se takoj posodobi.",
-    dc:"Kliknite za izbiro",dor:"ali povlecite in spustite",dh:"Podpira .xlsx datoteke",
-    bb:"← Nazaj",al:"Admin",
-    tt:"Danes",tu:"Prihajajoče",to:"Stare izmene",
-    tl:"DANES",wk:"Delam",off:"Prost dan",on:"konča naslednji dan",
-    nt:"Danes ni izmene",nu:"Ni prihajajočih izmen",no:"Ni starih izmen",
-    nf:"Ime ni najdeno v urniku.",ns:"Preverite črkovanje ali vprašajte nadrejenega.",
-    ok:"Urnik uspešno naložen!",li:"Naloženo",pp:"oseb,",fm:"za",
-    tl2:"Svetla",td:"Temna",
-    mo:["Januar","Februar","Marec","April","Maj","Junij","Julij","Avgust","September","Oktober","November","December"],
-    dw:["Ned","Pon","Tor","Sre","Čet","Pet","Sob"]
-  }
+  en:{title:'Shift Lookup',gm:'Good morning, ',ga:'Good afternoon, ',ge:'Good evening, ',gn:'Good night, ',
+      sub:'Enter your name to see your shifts',ph:'Your name...',sb:'Search',
+      tt:'Today',tu:'Upcoming',to:'Old Shifts',tl:'TODAY',wk:'Working',off:'Day Off',on:'ends next day',
+      nt:'No shift today',nu:'No upcoming shifts',no:'No past shifts',
+      nf:'Name not found in the schedule.',ns:'Check spelling or ask your supervisor.',
+      tl2:'Light',td:'Dark',loading:'Loading schedule...',loaded:'Schedule ready',
+      mo:['January','February','March','April','May','June','July','August','September','October','November','December'],
+      dw:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']},
+  sl:{title:'Pregled izmen',gm:'Dobro jutro, ',ga:'Dober dan, ',ge:'Dober večer, ',gn:'Lahko noč, ',
+      sub:'Vnesite ime za ogled vaših izmen',ph:'Vaše ime...',sb:'Išči',
+      tt:'Danes',tu:'Prihajajoče',to:'Stare izmene',tl:'DANES',wk:'Delam',off:'Prost dan',on:'konča naslednji dan',
+      nt:'Danes ni izmene',nu:'Ni prihajajočih izmen',no:'Ni starih izmen',
+      nf:'Ime ni najdeno v urniku.',ns:'Preverite črkovanje ali vprašajte nadrejenega.',
+      tl2:'Svetla',td:'Temna',loading:'Nalagam urnik...',loaded:'Urnik pripravljen',
+      mo:['Januar','Februar','Marec','April','Maj','Junij','Julij','Avgust','September','Oktober','November','December'],
+      dw:['Ned','Pon','Tor','Sre','Čet','Pet','Sob']}
 };
+
+const SHEET_URL='https://raw.githubusercontent.com/Parth06-exe/shift-app/main/shift.xlsx';
 
 let L='en',THM='dark',DATA=null,TAB='today';
 
@@ -192,11 +140,10 @@ function setL(l){
   L=l;
   document.getElementById('modal').style.display='none';
   document.getElementById('app').style.display='block';
-  applyT();
-  setGreet();
+  applyT();setGreet();
   document.getElementById('ben').classList.toggle('on',L==='en');
   document.getElementById('bsl').classList.toggle('on',L==='sl');
-  document.getElementById('uh').style.display=DATA?'none':'block';
+  if(!DATA) loadSchedule();
 }
 
 function applyT(){
@@ -205,199 +152,144 @@ function applyT(){
   document.getElementById('ssub').textContent=t.sub;
   document.getElementById('ni').placeholder=t.ph;
   document.getElementById('sbtn').textContent=t.sb;
-  document.getElementById('hadmlbl').textContent=t.al;
-  document.getElementById('at').textContent=t.at;
-  document.getElementById('as2').textContent=t.as;
-  document.getElementById('dzc').textContent=t.dc;
-  document.getElementById('dzo2').textContent=t.dor;
-  document.getElementById('dzh').textContent=t.dh;
-  document.getElementById('bb').textContent=t.bb;
-  document.getElementById('uht').textContent=t.ht;
-  document.getElementById('uhl').textContent=t.hl;
-  document.getElementById('uhr').textContent=t.hr;
   document.getElementById('tlbl').textContent=THM==='dark'?t.tl2:t.td;
-  if(DATA&&document.getElementById('res').innerHTML!=='')go(true);
+  if(DATA) go(true);
 }
 
 function setGreet(){
   const h=new Date().getHours(),t=TR[L];
-  document.getElementById('greet').textContent=
-    h>=5&&h<12?t.gm:h>=12&&h<17?t.ga:h>=17&&h<22?t.ge:t.gn;
+  document.getElementById('greet').textContent=h>=5&&h<12?t.gm:h<17?t.ga:h<22?t.ge:t.gn;
 }
 
-function goAdmin(){
-  document.getElementById('sv').style.display='none';
-  document.getElementById('adm').style.display='block';
-}
-function goSearch(){
-  document.getElementById('adm').style.display='none';
-  document.getElementById('sv').style.display='block';
-}
-function dzo(e){e.preventDefault();document.getElementById('dz').classList.add('over');}
-function dzl(){document.getElementById('dz').classList.remove('over');}
-function dzd(e){e.preventDefault();dzl();hf(e.dataTransfer.files[0]);}
-
-function hf(file){
-  if(!file)return;
-  const ast=document.getElementById('ast');
-  ast.className='ast';
-  const reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      const wb=XLSX.read(e.target.result,{type:'array'});
+function loadSchedule(){
+  const msg=document.getElementById('loadmsg');
+  msg.textContent=TR[L].loading;
+  fetch(SHEET_URL)
+    .then(r=>r.arrayBuffer())
+    .then(buf=>{
+      const wb=XLSX.read(buf,{type:'array'});
       const ws=wb.Sheets[wb.SheetNames[0]];
       DATA=parseSheet(ws);
-      ast.className='ast ok';
-      ast.textContent=TR[L].ok;
-      const t=TR[L];
-      document.getElementById('li').textContent=
-        t.li+' '+DATA.people.length+' '+t.pp+' '+t.fm+' '+DATA.monthName+' '+DATA.year;
-      document.getElementById('uh').style.display='none';
-    }catch(err){
-      ast.className='ast er';
-      ast.textContent='Error: '+err.message;
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}function parseSheet(ws){
+      msg.textContent='✓ '+TR[L].loaded;
+      setTimeout(()=>msg.textContent='',2000);
+    })
+    .catch(()=>{
+      msg.textContent='⚠️ Could not load schedule. Check your internet connection.';
+    });
+}
+
+function parseSheet(ws){
   const range=XLSX.utils.decode_range(ws['!ref']);
   const rows=[];
   for(let r=range.s.r;r<=range.e.r;r++){
     const row=[];
     for(let c=range.s.c;c<=range.e.c;c++){
-      const cell=ws[XLSX.utils.encode_cell({r:r,c:c})];
+      const cell=ws[XLSX.utils.encode_cell({r,c})];
       row.push(cell?String(cell.v).trim():'');
     }
     rows.push(row);
   }
-
   let monthNum=new Date().getMonth()+1,year=new Date().getFullYear(),monthName='';
-  const r0=rows[0]?rows[0].join(' ').toLowerCase():'';
   const slM={januar:1,februar:2,marec:3,april:4,maj:5,junij:6,julij:7,avgust:8,september:9,oktober:10,november:11,december:12};
-  const enM={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
+  const r0=rows[0].join(' ').toLowerCase();
   for(const[k,v] of Object.entries(slM)){if(r0.includes(k)){monthNum=v;break;}}
-  for(const[k,v] of Object.entries(enM)){if(r0.includes(k)){monthNum=v;break;}}
-  const yrM=r0.match(/\d{4}/);
-    if(yrM)year=parseInt(yrM[0]);
-  monthName=TR[L].mo[monthNum-1];
+  const ym=rows[0].join(' ').match(/\d{4}/);if(ym)year=parseInt(ym[0]);
+  monthName=(TR.en.mo[monthNum-1]||'');
 
-  let hdrRow=-1,nameCol=-1;
-  for(let r=0;r<Math.min(rows.length,5);r++){
-    const idx=rows[r].findIndex(c=>c.toLowerCase()==='ime'||c.toLowerCase()==='name');
-    if(idx!==-1){hdrRow=r;nameCol=idx;break;}
+  let headerRow=-1,nameCol=-1;
+  for(let i=0;i<rows.length;i++){
+    const idx=rows[i].findIndex(c=>c.toLowerCase()==='ime');
+    if(idx>=0){headerRow=i;nameCol=idx;break;}
   }
-  if(hdrRow===-1)throw new Error('Cannot find header row with Ime or Name');
+  if(headerRow<0)return null;
 
-  const dayMap={};
-  for(let c=nameCol+1;c<rows[hdrRow].length;c++){
-    const v=parseInt(rows[hdrRow][c]);
-    if(!isNaN(v)&&v>=1&&v<=31)dayMap[c]=v;
-  }
-
+  const dayRow=rows[headerRow];
   const people=[];
-  for(let r=hdrRow+1;r<rows.length;r++){
-    const name=rows[r][nameCol]?rows[r][nameCol].trim():'';
-    if(!name)continue;
-    if(name.length<=3&&name===name.toUpperCase()&&!/\s/.test(name))continue;
-    const shifts=[];
-    for(const[col,day] of Object.entries(dayMap)){
-      const cell=rows[r][parseInt(col)]||'';
-      const parts=cell.trim().split(/\s+/);
-      if(parts.length>=2){
-        const s=parts[0],e=parts[1];
-        if(s.toUpperCase()==='X'||e.toUpperCase()==='X'){
-          shifts.push({day:parseInt(day),isOff:true,isOvernight:false,start:null,end:null});
-        } else {
-          const sh=parseInt(s),eh=parseInt(e);
-          if(!isNaN(sh)&&!isNaN(eh)){
-            const isOvernight=eh<sh||(eh===0&&sh>0)||eh===24;
-            shifts.push({day:parseInt(day),isOff:false,isOvernight:isOvernight,start:sh,end:eh===24?0:eh});
-          }
-        }
+  for(let r=headerRow+2;r<rows.length;r++){
+    const row=rows[r];
+    const name=row[nameCol]||'';
+    if(!name||name.startsWith('---'))continue;
+    const shifts={};
+    for(let c=nameCol+1;c<dayRow.length;c++){
+      const dayStr=dayRow[c];
+      const day=parseInt(dayStr);
+      if(!day)continue;
+      const cell=row[c]||'';
+      const parts=cell.split(/\s+/);
+      if(parts.length>=2&&parts[0]!='X'){
+        const start=parseInt(parts[0]),end=parseInt(parts[1]);
+        const overnight=start>=13&&end<=6;
+        shifts[day]={start,end,overnight,off:false};
+      } else {
+        shifts[day]={off:true};
       }
     }
-    people.push({name:name,shifts:shifts});
+    people.push({name,shifts});
   }
-  return{month:monthNum,year:year,monthName:monthName,people:people};
+  return{people,monthNum,year,monthName};
 }
 
-function go(rerender){
-  if(!rerender){
-    const q=document.getElementById('ni').value.trim();
-    if(!q)return;
-    window._lastQ=q;
-  }
-  const q=window._lastQ||'';
-  const res=document.getElementById('res');
+function go(silent){
   if(!DATA){
-    res.innerHTML='<div class="empty"><div class="eico">📂</div><p>'+TR[L].ht+'</p></div>';
+    document.getElementById('res').innerHTML='';
     return;
   }
-  const match=DATA.people.find(p=>p.name.toUpperCase()===q.toUpperCase());
-  if(!match){
-    res.innerHTML='<div class="empty"><div class="eico">🔍</div><p>'+TR[L].nf+'</p><p style="margin-top:8px;font-size:.8rem;">'+TR[L].ns+'</p></div>';
-    return;
-  }
+  const q=(document.getElementById('ni').value||'').trim().toLowerCase();
+  if(!q&&!silent)return;
   const t=TR[L];
-  const initials=match.name.split(' ').map(function(n){return n[0];}).join('').toUpperCase().slice(0,2);
+  const found=DATA.people.find(p=>p.name.toLowerCase().includes(q)||q.includes(p.name.toLowerCase().split(' ')[0].toLowerCase()));
+  const res=document.getElementById('res');
+  if(!found){
+    if(q) res.innerHTML=`<div class="empty"><div class="eico">🔍</div><div>${t.nf}</div><div style="font-size:.82rem;margin-top:6px;color:var(--sub)">${t.ns}</div></div>`;
+    return;
+  }
+  const initials=found.name.split(' ').map(w=>w[0]).join('').slice(0,2);
   const today=new Date();
   const todayDay=today.getDate();
-  const isCurrentMonth=(DATA.month===today.getMonth()+1&&DATA.year===today.getFullYear());
-  const todayShift=isCurrentMonth?match.shifts.find(function(s){return s.day===todayDay;}):null;
+  const todayMonth=today.getMonth()+1;
+  const todayYear=today.getFullYear();
+  const isCurrentMonth=DATA.monthNum===todayMonth&&DATA.year===todayYear;
 
-  let html='<div class="ph"><div class="av">'+initials+'</div><div><div class="pn">'+match.name+'</div><div class="pm">'+t.fm+' '+t.mo[DATA.month-1]+' '+DATA.year+'</div></div></div>';
+  function renderTab(){
+    const days=Object.keys(found.shifts).map(Number).sort((a,b)=>a-b);
+    let todayHTML='',upHTML='',oldHTML='';
 
-  if(isCurrentMonth&&todayShift){
-    html+='<div class="tcard">';
-    html+='<div class="tlbl">'+t.tl+' — '+t.dw[today.getDay()]+' '+todayDay+' '+t.mo[DATA.month-1]+'</div>';
-    if(todayShift.isOff){
-      html+='<div class="tst">'+t.off+'</div>';
-    } else {
-      html+='<div class="tst">'+t.wk+(todayShift.isOvernight?'<span class="bdg">'+t.on+'</span>':'')+'</div>';
-      html+='<div class="ttm">'+pad(todayShift.start)+':00 → '+pad(todayShift.end)+':00'+(todayShift.isOvernight?' (+1 day)':'')+'</div>';
-    }
-    html+='</div>';
-  }
-
-  html+='<div class="tabs">';
-  html+='<button class="tab'+(TAB==='today'?' on':'')+'" onclick="switchTab(\'today\')">'+t.tt+'</button>';
-  html+='<button class="tab'+(TAB==='upcoming'?' on':'')+'" onclick="switchTab(\'upcoming\')">'+t.tu+'</button>';
-  html+='<button class="tab'+(TAB==='old'?' on':'')+'" onclick="switchTab(\'old\')">'+t.to+'</button>';
-  html+='</div>';
-
-  const workShifts=match.shifts.filter(function(s){return !s.isOff;});
-  let list=[];
-  if(TAB==='today'){
-    list=isCurrentMonth?match.shifts.filter(function(s){return s.day===todayDay;}):[];
-  } else if(TAB==='upcoming'){
-    list=isCurrentMonth?workShifts.filter(function(s){return s.day>todayDay;}):workShifts;
-  } else {
-    list=isCurrentMonth?workShifts.filter(function(s){return s.day<todayDay;}):[];
-  }
-
-  if(!list.length){
-    const msg=TAB==='upcoming'?t.nu:TAB==='old'?t.no:t.nt;
-    html+='<div class="empty"><div class="eico">📅</div><p>'+msg+'</p></div>';
-  } else {
-    html+='<div class="slist">';
-    for(let i=0;ist.length;i++){
-      const s=list[i];
-      const d=new Date(DATA.year,DATA.month-1,s.day);
-      const dow=t.dw[d.getDay()];
-      if(s.isOff){
-        html+='<div class="sc off"><div class="dot do"></div><div class="dc"><div class="dd">'+dow+' '+s.day+' '+t.mo[DATA.month-1]+'</div></div><div class="dt">'+t.off+'</div></div>';
+    if(isCurrentMonth){
+      const ts=found.shifts[todayDay];
+      if(ts){
+        if(ts.off){
+          todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">🌿 ${t.off}</div></div>`;
+        } else {
+          const over=ts.overnight?`<span class="bdg">⏱ ${t.on}</span>`:'';
+          todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">✅ ${t.wk}${over}</div><div class="ttm">${ts.start}:00 – ${ts.end}:00</div></div>`;
+        }
       } else {
-        const cls=s.isOvernight?'dn':'dw';
-        html+='<div class="sc"><div class="dot '+cls+'"></div><div class="dc"><div class="dd">'+dow+' '+s.day+' '+t.mo[DATA.month-1]+'</div></div><div><div class="dt">'+pad(s.start)+':00 → '+pad(s.end)+':00</div>'+(s.isOvernight?'<div class="dn2">'+t.on+'</div>':'')+'</div></div>';
+        todayHTML=`<div class="tcard"><div class="tlbl">${t.tl}</div><div class="tst">—</div></div>`;
       }
     }
-    html+='</div>';
-  }
-  res.innerHTML=html;
-}
 
-function switchTab(tab){TAB=tab;go(true);}
-function pad(n){return n===null?'--':String(n).padStart(2,'0');}
-</script>
-</body>
-</html>
+    const makeCards=arr=>arr.map(d=>{
+      const s=found.shifts[d];
+      const date=new Date(DATA.year,DATA.monthNum-1,d);
+      const dow=t.dw[date.getDay()];
+      const dateStr=`${d} ${TR.en.mo[DATA.monthNum-1]}`;
+      if(s.off) return `<div class="sc off"><div class="dot do"></div><div class="dc"><div class="dd">${dateStr}</div><div class="dw2">${dow}</div></div><div class="dt">${t.off}</div></div>`;
+      const over=s.overnight?`<div class="dn2">⏱ ${t.on}</div>`:'';
+      return `<div class="sc"><div class="dot ${s.overnight?'dn':'dw'}"></div><div class="dc"><div class="dd">${dateStr}</div><div class="dw2">${dow}</div></div><div><div class="dt">${s.start}:00 – ${s.end}:00</div>${over}</div></div>`;
+    }).join('');
+
+    if(isCurrentMonth){
+      const upcoming=days.filter(d=>d>todayDay);
+      const old=days.filter(d=>d<todayDay);
+      upHTML=upcoming.length?`<div class="slist">${makeCards(upcoming)}</div>`:`<div class="empty"><div class="eico">📅</div>${t.nu}</div>`;
+      oldHTML=old.length?`<div class="slist">${makeCards(old)}</div>`:`<div class="empty"><div class="eico">📂</div>${t.no}</div>`;
+    } else {
+      upHTML=`<div class="slist">${makeCards(days)}</div>`;
+      oldHTML=upHTML;
+    }
+
+    const tabs=`<div class="tabs">
+      <button class="tab ${TAB==='today'?'on':''}" onclick="TAB='today';go(true)">${t.tt}</button>
+      <button class="tab ${TAB==='upcoming'?'on':''}" onclick="TAB='upcoming';go(true)">${t.tu}</button>
+      <button class="tab ${TAB==='old'?'on':''}" onclick="TAB='old';go(true)">${t.to}</button>
+    
