@@ -1,6 +1,3 @@
-Here is the **complete, final, production-ready code**. Save this as `index.html` — this is the only file you need for the website:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,23 +7,21 @@ Here is the **complete, final, production-ready code**. Save this as `index.html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
-  --bg:#f4f4f4; --surface:#fff; --text:#1a1a1a; --subtext:#555;
-  --accent:#008080; --accent2:#005f5f; --border:#ddd;
-  --card-bg:#fff; --off-bg:#f0f0f0; --modal-bg:rgba(0,0,0,0.55);
-  --lang-bg:#1a1a1a; --lang-text:#fff; --lang-border:#444;
+  --bg:#f4f4f4;--surface:#fff;--text:#1a1a1a;--subtext:#555;
+  --accent:#008080;--accent2:#005f5f;--border:#ddd;
+  --card-bg:#fff;--off-bg:#f0f0f0;--modal-bg:rgba(0,0,0,0.55);
+  --lang-bg:#1a1a1a;--lang-text:#fff;--lang-border:#444;
 }
 [data-theme="dark"] {
-  --bg:#121212; --surface:#1e1e1e; --text:#f0f0f0; --subtext:#aaa;
-  --accent:#00b3b3; --accent2:#009090; --border:#333;
-  --card-bg:#252525; --off-bg:#1a1a1a; --modal-bg:rgba(0,0,0,0.85);
-  --lang-bg:#1a1a1a; --lang-text:#fff; --lang-border:#555;
+  --bg:#121212;--surface:#1e1e1e;--text:#f0f0f0;--subtext:#aaa;
+  --accent:#00b3b3;--accent2:#009090;--border:#333;
+  --card-bg:#252525;--off-bg:#1a1a1a;--modal-bg:rgba(0,0,0,0.85);
+  --lang-bg:#1a1a1a;--lang-text:#fff;--lang-border:#555;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;}
-
-/* MODAL */
 #lang-modal{position:fixed;inset:0;background:var(--modal-bg);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(8px);}
-.modal-box{background:var(--surface);border-radius:22px;padding:36px 32px;width:320px;text-align:center;box-shadow:0 10px 50px rgba(0,0,0,0.35);position:relative;}
+.modal-box{background:var(--surface);border-radius:22px;padding:36px 32px;width:320px;text-align:center;box-shadow:0 10px 50px rgba(0,0,0,0.35);}
 .modal-top{display:flex;justify-content:flex-end;margin-bottom:14px;}
 .theme-toggle{background:none;border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;font-size:0.78rem;color:var(--text);display:flex;align-items:center;gap:5px;}
 .modal-icon{font-size:2.8rem;margin-bottom:8px;}
@@ -37,8 +32,6 @@ body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);mi
 .lang-btn:hover{border-color:var(--accent);transform:translateY(-3px);}
 .lang-code{font-size:1.9rem;font-weight:800;letter-spacing:2px;}
 .lang-name{font-size:0.68rem;color:var(--subtext);text-transform:uppercase;letter-spacing:1px;}
-
-/* HEADER */
 #app{display:none;}
 header{background:var(--surface);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .hdr-left{display:flex;align-items:center;gap:9px;}
@@ -48,8 +41,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .hdr-btn{background:none;border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:0.76rem;cursor:pointer;color:var(--text);transition:border-color .2s;}
 .hdr-btn:hover{border-color:var(--accent);}
 .hdr-btn.active{border-color:var(--accent);color:var(--accent);font-weight:700;}
-
-/* SEARCH */
 .search-section{max-width:580px;margin:44px auto 0;padding:0 20px;text-align:center;}
 .search-greeting{font-size:1.55rem;font-weight:700;margin-bottom:6px;}
 .search-sub{font-size:0.88rem;color:var(--subtext);margin-bottom:22px;}
@@ -60,29 +51,20 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .search-box button:hover{background:var(--accent2);}
 .upload-hint{max-width:580px;margin:10px auto 0;padding:0 20px;text-align:center;font-size:0.8rem;color:var(--subtext);}
 .upload-hint a{color:var(--accent);cursor:pointer;text-decoration:underline;}
-
-/* RESULTS */
 .results-section{max-width:680px;margin:30px auto;padding:0 20px 70px;}
 .person-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
 .person-avatar{width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;flex-shrink:0;}
 .pname{font-size:1.15rem;font-weight:700;}
 .pmonth{font-size:0.8rem;color:var(--subtext);margin-top:2px;}
-
-/* TABS */
 .tab-row{display:flex;gap:10px;margin-bottom:18px;}
 .tab-btn{flex:1;padding:10px;border-radius:10px;border:2px solid var(--border);background:var(--surface);color:var(--text);font-size:0.85rem;font-weight:600;cursor:pointer;transition:all .2s;}
 .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-
-/* TODAY CARD */
 .today-card{border-radius:16px;padding:20px 22px;margin-bottom:14px;border:2px solid var(--accent);background:var(--card-bg);}
 .today-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:7px;}
 .today-status{font-size:1.35rem;font-weight:700;}
 .today-time{font-size:0.92rem;color:var(--subtext);margin-top:4px;}
 .badge{display:inline-block;font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;}
 .badge-overnight{background:#ff8c00;color:#fff;}
-.badge-off{background:#888;color:#fff;}
-
-/* SHIFT LIST */
 .shift-list{display:flex;flex-direction:column;gap:9px;}
 .shift-card{background:var(--card-bg);border:1px solid var(--border);border-radius:13px;padding:13px 17px;display:flex;align-items:center;gap:13px;}
 .shift-card.off{background:var(--off-bg);opacity:.65;}
@@ -95,12 +77,8 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .shift-dow{font-size:0.72rem;color:var(--subtext);margin-top:1px;}
 .shift-time{font-size:0.92rem;font-weight:600;}
 .shift-note{font-size:0.72rem;color:#ff8c00;margin-top:2px;}
-
-/* EMPTY / NOT FOUND */
 .empty-state{text-align:center;padding:48px 20px;color:var(--subtext);}
 .empty-icon{font-size:3rem;margin-bottom:12px;}
-
-/* ADMIN */
 #admin-panel{display:none;max-width:480px;margin:40px auto;padding:0 20px 60px;}
 .admin-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;}
 .admin-title{font-size:1.05rem;font-weight:700;margin-bottom:5px;}
@@ -119,7 +97,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .loaded-info{font-size:0.78rem;color:var(--subtext);margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
 .back-btn-full{margin-top:16px;width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--text);font-size:0.88rem;cursor:pointer;transition:border-color .2s;}
 .back-btn-full:hover{border-color:var(--accent);}
-
 @media(max-width:480px){
   .modal-box{width:92vw;padding:26px 16px;}
   .lang-btn{width:105px;height:80px;}
@@ -130,7 +107,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 </head>
 <body data-theme="dark">
 
-<!-- ══ LANGUAGE MODAL ══ -->
 <div id="lang-modal">
   <div class="modal-box">
     <div class="modal-top">
@@ -155,7 +131,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
   </div>
 </div>
 
-<!-- ══ MAIN APP ══ -->
 <div id="app">
   <header>
     <div class="hdr-left">
@@ -169,148 +144,149 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
       <button class="hdr-btn" onclick="showAdmin()" id="hdr-admin-btn">⚙️ <span id="hdr-admin-lbl">Admin</span></button>
     </div>
   </header>
-
-  <!-- Search View -->
   <div id="search-view">
     <div class="search-section">
-      <div class="search-greeting" id="greeting">Good morning 👋</div>
-      <div class="search-sub" id="search-sub">Enter your name to see your shifts</div>
+      <div class="search-greeting" id="greeting"></div>
+      <div class="search-sub" id="search-sub"></div>
       <div class="search-box">
-        <input id="name-input" type="text" placeholder="Your name..." autocomplete="off"
-               onkeydown="if(event.key==='Enter')doSearch()"/>
+        <input id="name-input" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')doSearch()"/>
         <button onclick="doSearch()" id="search-btn">Search</button>
       </div>
     </div>
-    <div class="upload-hint" id="upload-hint" style="display:none;">
+    <div class="upload-hint" id="upload-hint">
       <span id="hint-text"></span> <a onclick="showAdmin()" id="hint-link"></a><span id="hint-rest"></span>
     </div>
     <div class="results-section" id="results"></div>
   </div>
-
-  <!-- Admin View -->
   <div id="admin-panel">
     <div class="admin-card">
-      <div class="admin-title" id="admin-title">Upload Shift Schedule</div>
-      <div class="admin-sub" id="admin-sub">Upload your monthly .xlsx file. The schedule updates instantly.</div>
+      <div class="admin-title" id="admin-title"></div>
+      <div class="admin-sub" id="admin-sub"></div>
       <div class="drop-zone" id="drop-zone"
            onclick="document.getElementById('file-input').click()"
            ondragover="dzOver(event)" ondragleave="dzLeave()" ondrop="dzDrop(event)">
         <div class="dz-icon">📂</div>
-        <p><strong id="dz-click">Click to choose</strong> <span id="dz-or">or drag & drop</span></p>
-        <p id="dz-hint" style="margin-top:5px;font-size:0.75rem;">Supports .xlsx files</p>
+        <p><strong id="dz-click"></strong> <span id="dz-or"></span></p>
+        <p id="dz-hint" style="margin-top:5px;font-size:0.75rem;"></p>
       </div>
       <input type="file" id="file-input" accept=".xlsx,.xls" onchange="handleFile(this.files[0])"/>
       <div class="admin-status" id="admin-status"></div>
       <div class="loaded-info" id="loaded-info"></div>
-      <button class="back-btn-full" onclick="showSearch()" id="back-btn">← Back</button>
+      <button class="back-btn-full" onclick="showSearch()" id="back-btn"></button>
     </div>
   </div>
-</div>
-
-<script>
-// ══════════════════════════════════════════════════════════
-// TRANSLATIONS
-// ══════════════════════════════════════════════════════════
+</div><script>
+// ══ TRANSLATIONS ══
 const T = {
-  en: {
+  en:{
     hdrTitle:"Shift Lookup",
-    greetMorning:"Good morning 👋", greetAfternoon:"Good afternoon 👋",
-    greetEvening:"Good evening 👋", greetNight:"Good night 👋",
+    greetMorning:"Good morning 👋",greetAfternoon:"Good afternoon 👋",
+    greetEvening:"Good evening 👋",greetNight:"Good night 👋",
     searchSub:"Enter your name to see your shifts",
-    placeholder:"Your name...", searchBtn:"Search",
-    hintText:"No schedule loaded.", hintLink:"Upload Excel file", hintRest:" to get started.",
+    placeholder:"Your name...",searchBtn:"Search",
+    hintText:"No schedule loaded.",hintLink:"Upload Excel file",hintRest:" to get started.",
     adminTitle:"Upload Shift Schedule",
     adminSub:"Upload your monthly .xlsx file. The schedule updates instantly.",
-    dzClick:"Click to choose", dzOr:"or drag & drop", dzHint:"Supports .xlsx files",
-    backBtn:"← Back", adminLbl:"Admin",
-    tabToday:"Today", tabUpcoming:"Upcoming", tabOld:"Old Shifts",
-    todayLbl:"TODAY", working:"Working", dayOff:"Day Off",
-    overnight:"ends next day", noShiftToday:"No shift today",
-    noUpcoming:"No upcoming shifts", noOld:"No past shifts",
-    notFound:"Name not found in schedule.",
+    dzClick:"Click to choose",dzOr:"or drag & drop",dzHint:"Supports .xlsx files",
+    backBtn:"← Back",adminLbl:"Admin",
+    tabToday:"Today",tabUpcoming:"Upcoming",tabOld:"Old Shifts",
+    todayLbl:"TODAY",working:"Working",dayOff:"Day Off",
+    overnight:"ends next day",noShiftToday:"No shift today",
+    noUpcoming:"No upcoming shifts",noOld:"No past shifts",
+    notFound:"Name not found in the schedule.",
     notFoundSub:"Check spelling or ask your supervisor.",
-    loadedSuccess:"Schedule loaded successfully!",
-    loadedInfo:"Loaded", people:"people,", forMonth:"for",
-    themeLight:"Light", themeDark:"Dark",
+    loadedOk:"Schedule loaded successfully!",
+    loadedInfo:"Loaded",people:"people,",forMonth:"for",
+    themeLight:"Light",themeDark:"Dark",
     months:["January","February","March","April","May","June",
             "July","August","September","October","November","December"],
-    dow:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
+    dow:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
   },
-  sl: {
+  sl:{
     hdrTitle:"Pregled izmen",
-    greetMorning:"Dobro jutro 👋", greetAfternoon:"Dober dan 👋",
-    greetEvening:"Dober večer 👋", greetNight:"Lahko noč 👋",
+    greetMorning:"Dobro jutro 👋",greetAfternoon:"Dober dan 👋",
+    greetEvening:"Dober večer 👋",greetNight:"Lahko noč 👋",
     searchSub:"Vnesite ime za ogled vaših izmen",
-    placeholder:"Vaše ime...", searchBtn:"Išči",
-    hintText:"Urnik ni naložen.", hintLink:"Naložite Excel datoteko", hintRest:" za začetek.",
+    placeholder:"Vaše ime...",searchBtn:"Išči",
+    hintText:"Urnik ni naložen.",hintLink:"Naložite Excel datoteko",hintRest:" za začetek.",
     adminTitle:"Naložite urnik izmen",
     adminSub:"Naložite mesečno .xlsx datoteko. Urnik se takoj posodobi.",
-    dzClick:"Kliknite za izbiro", dzOr:"ali povlecite in spustite", dzHint:"Podpira .xlsx datoteke",
-    backBtn:"← Nazaj", adminLbl:"Admin",
-    tabToday:"Danes", tabUpcoming:"Prihajajoče", tabOld:"Stare izmene",
-    todayLbl:"DANES", working:"Delam", dayOff:"Prost dan",
-    overnight:"konča naslednji dan", noShiftToday:"Danes ni izmene",
-    noUpcoming:"Ni prihajajočih izmen", noOld:"Ni starih izmen",
+    dzClick:"Kliknite za izbiro",dzOr:"ali povlecite in spustite",dzHint:"Podpira .xlsx datoteke",
+    backBtn:"← Nazaj",adminLbl:"Admin",
+    tabToday:"Danes",tabUpcoming:"Prihajajoče",tabOld:"Stare izmene",
+    todayLbl:"DANES",working:"Delam",dayOff:"Prost dan",
+    overnight:"konča naslednji dan",noShiftToday:"Danes ni izmene",
+    noUpcoming:"Ni prihajajočih izmen",noOld:"Ni starih izmen",
     notFound:"Ime ni najdeno v urniku.",
     notFoundSub:"Preverite črkovanje ali vprašajte nadrejenega.",
-    loadedSuccess:"Urnik uspešno naložen!",
-    loadedInfo:"Naloženo", people:"oseb,", forMonth:"za",
-    themeLight:"Svetla", themeDark:"Temna",
+    loadedOk:"Urnik uspešno naložen!",
+    loadedInfo:"Naloženo",people:"oseb,",forMonth:"za",
+    themeLight:"Svetla",themeDark:"Temna",
     months:["Januar","Februar","Marec","April","Maj","Junij",
             "Julij","Avgust","September","Oktober","November","December"],
-    dow:["Ned","Pon","Tor","Sre","Čet","Pet","Sob"],
+    dow:["Ned","Pon","Tor","Sre","Čet","Pet","Sob"]
   }
 };
 
-// ══════════════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════════════
-let lang = 'en';
-let theme = 'dark';
-let scheduleData = null;   // { month, year, people: [{name, shifts:[{date,start,end,isOff,isOvernight}]}] }
-let currentTab = 'today';
-let currentPerson = null;
+// ══ STATE ══
+let lang='en', theme='dark', scheduleData=null, currentTab='today';
 
-// ══════════════════════════════════════════════════════════
-// THEME
-// ══════════════════════════════════════════════════════════
-function toggleTheme() {
-  theme = theme === 'dark' ? 'light' : 'dark';
-  document.body.setAttribute('data-theme', theme);
-  const icon = theme === 'dark' ? '☀️' : '🌙';
-  const lbl  = theme === 'dark' ? T[lang].themeLight : T[lang].themeDark;
+// ══ THEME ══
+function toggleTheme(){
+  theme = theme==='dark'?'light':'dark';
+  document.body.setAttribute('data-theme',theme);
+  const icon = theme==='dark'?'☀️':'🌙';
   document.getElementById('m-theme-icon').textContent = icon;
-  document.getElementById('m-theme-lbl').textContent  = lbl;
-  const hb = document.getElementById('hdr-theme-btn');
-  if (hb) hb.textContent = icon;
+  document.getElementById('m-theme-lbl').textContent  = theme==='dark'?T[lang].themeLight:T[lang].themeDark;
+  document.getElementById('hdr-theme-btn').textContent = icon;
 }
 
-// ══════════════════════════════════════════════════════════
-// LANGUAGE
-// ══════════════════════════════════════════════════════════
-function setLang(l) {
-  lang = l;
-  document.getElementById('lang-modal').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  applyTranslations();
+// ══ LANGUAGE ══
+function setLang(l){
+  lang=l;
+  document.getElementById('lang-modal').style.display='none';
+  document.getElementById('app').style.display='block';
+  applyT();
   updateGreeting();
-  updateLangButtons();
-  if (!scheduleData) showUploadHint();
+  document.getElementById('btn-en').classList.toggle('active',lang==='en');
+  document.getElementById('btn-sl').classList.toggle('active',lang==='sl');
+  showUploadHint();
 }
 
-function updateLangButtons() {
-  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-  document.getElementById('btn-sl').classList.toggle('active', lang === 'sl');
+function applyT(){
+  const t=T[lang];
+  document.getElementById('hdr-title').textContent     = t.hdrTitle;
+  document.getElementById('search-sub').textContent    = t.searchSub;
+  document.getElementById('name-input').placeholder    = t.placeholder;
+  document.getElementById('search-btn').textContent    = t.searchBtn;
+  document.getElementById('hdr-admin-lbl').textContent = t.adminLbl;
+  document.getElementById('admin-title').textContent   = t.adminTitle;
+  document.getElementById('admin-sub').textContent     = t.adminSub;
+  document.getElementById('dz-click').textContent      = t.dzClick;
+  document.getElementById('dz-or').textContent         = t.dzOr;
+  document.getElementById('dz-hint').textContent       = t.dzHint;
+  document.getElementById('back-btn').textContent      = t.backBtn;
+  document.getElementById('hint-text').textContent     = t.hintText;
+  document.getElementById('hint-link').textContent     = t.hintLink;
+  document.getElementById('hint-rest').textContent     = t.hintRest;
+  document.getElementById('m-theme-lbl').textContent   = theme==='dark'?t.themeLight:t.themeDark;
 }
 
-function applyTranslations() {
-  const t = T[lang];
-  document.getElementById('hdr-title').textContent      = t.hdrTitle;
-  document.getElementById('search-sub').textContent     = t.searchSub;
-  document.getElementById('name-input').placeholder     = t.placeholder;
-  document.getElementById('search-btn').textContent     = t.searchBtn;
-  document.getElementById('hdr-admin-lbl').textContent  = t.adminLbl;
-  document.getElementById('admin-title').textContent    = t.adminTitle;
-  document.getElementById('admin-sub').textContent      = t.adminSub;
-  document.getElementById('dz-click').textContent       = t.dzClick;
-  document.getElementById
+function updateGreeting(){
+  const h=new Date().getHours();
+  const t=T[lang];
+  let g = h>=5&&h<12 ? t.greetMorning
+        : h>=12&&h<17? t.greetAfternoon
+        : h>=17&&h<22? t.greetEvening
+        : t.greetNight;
+  document.getElementById('greeting').textContent=g;
+}
+
+function showUploadHint(){
+  document.getElementById('upload-hint').style.display = scheduleData?'none':'block';
+}
+
+// ══ VIEWS ══
+function showAdmin(){
+  document.getElementById('search-view').style.display='none';
+  document.getElementById('admin-panel
