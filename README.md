@@ -126,6 +126,3 @@ Developed for internal shift management.
 Hosted free on GitHub Pages.  
 No backend, no database, no login — fully static.
 ```
-5. Click **Commit changes**
-
-GitHub will automatically display it on your repo homepage.
