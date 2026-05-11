@@ -174,8 +174,6 @@ function setL(l) {
   document.getElementById('bsl').classList.toggle('on', L === 'sl');
   if (!DATA) {
     loadSchedule();
-  } else if (LAST_Q) {
-    go(true);
   }
 }
 
@@ -186,7 +184,6 @@ function applyT() {
   document.getElementById('ni').placeholder = t.ph;
   document.getElementById('sbtn').textContent = t.sb;
   document.getElementById('tlbl').textContent = (THM === 'dark') ? t.tl2 : t.td;
-  if (LAST_Q) go(true);
 }
 
 function setGreet() {
@@ -228,7 +225,8 @@ function parseSheet(ws) {
     rows.push(row);
   }
 
-  var slM = {januar:1,februar:2,marec:3,april:4,maj:5,junij:6,julij:7,avgust:8,september:9,oktober:10,november:11,december:12};
+  var slM = {januar:1,februar:2,marec:3,april:4,maj:5,junij:6,
+             julij:7,avgust:8,september:9,oktober:10,november:11,december:12};
   var monthNum = new Date().getMonth() + 1;
   var year = new Date().getFullYear();
   var r0 = rows[0].join(' ').toLowerCase();
@@ -242,7 +240,9 @@ function parseSheet(ws) {
   for (var i = 0; i < rows.length; i++) {
     for (var j = 0; j < rows[i].length; j++) {
       if (rows[i][j].toLowerCase() === 'ime') {
-        headerRow = i; nameCol = j; break;
+        headerRow = i;
+        nameCol = j;
+        break;
       }
     }
     if (headerRow >= 0) break;
@@ -278,11 +278,15 @@ function parseSheet(ws) {
   return {people: people, monthNum: monthNum, year: year};
 }
 </script><script>
-function go(silent) {
-  if (!DATA) return;
-  var q = document.getElementById('ni').value.trim().toLowerCase();
-  if (q) LAST_Q = q;
-  var searchQ = LAST_Q;
+function go() {
+  if (!DATA) {
+    document.getElementById('lmsg').textContent = TR[L].loading;
+    return;
+  }
+
+  var rawQ = document.getElementById('ni').value.trim();
+  if (rawQ !== '') LAST_Q = rawQ;
+  var searchQ = LAST_Q.toLowerCase();
   if (!searchQ) return;
 
   var t = TR[L];
@@ -291,22 +295,31 @@ function go(silent) {
 
   for (var i = 0; i < DATA.people.length; i++) {
     var pn = DATA.people[i].name.toLowerCase();
+    var matched = false;
     if (pn.indexOf(searchQ) >= 0) {
+      matched = true;
+    } else {
+      var words = searchQ.split(' ');
+      for (var w = 0; w < words.length; w++) {
+        if (words[w].length > 1 && pn.indexOf(words[w]) >= 0) {
+          matched = true;
+          break;
+        }
+      }
+    }
+    if (matched) {
       found = DATA.people[i];
       break;
     }
-    var words = searchQ.split(' ');
-    for (var w = 0; w < words.length; w++) {
-      if (words[w].length > 1 && pn.indexOf(words[w]) >= 0) {
-        found = DATA.people[i];
-        break;
-      }
-    }
-    if (found) break;
   }
 
   if (!found) {
-    res.innerHTML = '<div class="empty"><div class="eico">&#128269;</div><div>' + t.nf + '</div><div style="font-size:.82rem;margin-top:6px;color:var(--sub)">' + t.ns + '</div></div>';
+    res.innerHTML =
+      '<div class="empty">' +
+      '<div class="eico">&#128269;</div>' +
+      '<div>' + t.nf + '</div>' +
+      '<div style="font-size:.82rem;margin-top:6px;color:var(--sub)">' + t.ns + '</div>' +
+      '</div>';
     return;
   }
 
@@ -315,7 +328,9 @@ function go(silent) {
   var todayMonth = today.getMonth() + 1;
   var todayYear = today.getFullYear();
   var isNow = (DATA.monthNum === todayMonth && DATA.year === todayYear);
-  var initials = found.name.split(' ').map(function(w) { return w[0] || ''; }).join('').slice(0, 2).toUpperCase();
+  var initials = found.name.split(' ').map(function(x) {
+    return x[0] || '';
+  }).join('').slice(0, 2).toUpperCase();
 
   function makeCard(d) {
     var s = found.shifts[d];
@@ -323,17 +338,15 @@ function go(silent) {
     var dow = t.dw[dt.getDay()];
     var dateStr = d + ' ' + TR.en.mo[DATA.monthNum - 1];
     if (s.off) {
-      return '<div class="sc off"><div class="dot do"></div><div class="dc"><div class="dd">' + dateStr + '</div><div class="dw2">' + dow + '</div></div><div class="dt">' + t.off + '</div></div>';
+      return '<div class="sc off">' +
+        '<div class="dot do"></div>' +
+        '<div class="dc"><div class="dd">' + dateStr + '</div><div class="dw2">' + dow + '</div></div>' +
+        '<div class="dt">' + t.off + '</div>' +
+        '</div>';
     }
     var over = s.overnight ? '<div class="dn2">&#9201; ' + t.on + '</div>' : '';
     var cls = s.overnight ? 'dn' : 'dw';
-    return '<div class="sc"><div class="dot ' + cls + '"></div><div class="dc"><div class="dd">' + dateStr + '</div><div class="dw2">' + dow + '</div></div><div><div class="dt">' + s.start + ':00 &ndash; ' + s.end + ':00</div>' + over + '</div></div>';
-  }
-
-  var days = Object.keys(found.shifts).map(Number).sort(function(a, b) { return a - b; });
-  var todayHTML = '', upHTML = '', oldHTML = '';
-
-  if (isNow) {
-    var ts = found.shifts[todayDay];
-    if (!ts || ts.off) {
-      todayHTML = '<div class="
+    return '<div class="sc">' +
+      '<div class="dot ' + cls + '"></div>' +
+      '<div class="dc"><div class="dd">' + dateStr + '</div><div class="dw2">' + dow + '</div></div>' +
+      '<div><div class="dt">' + s.start + ':00 &ndash; ' + s.end + ':00</div>' + over + '</div>' +
