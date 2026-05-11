@@ -124,4 +124,3 @@ Works on all modern browsers:
 Developed for internal shift management.  
 Hosted free on GitHub Pages.  
 No backend, no database, no login — fully static.
-```
