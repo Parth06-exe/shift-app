@@ -279,74 +279,76 @@ function parseSheet(ws) {
 }
 </script><script>
 function go() {
-  if (!DATA) {
-    document.getElementById('lmsg').textContent = TR[L].loading;
-    return;
-  }
-
+  if (!DATA) { document.getElementById('lmsg').textContent = TR[L].loading; return; }
   var rawQ = document.getElementById('ni').value.trim();
   if (rawQ !== '') LAST_Q = rawQ;
   var searchQ = LAST_Q.toLowerCase();
   if (!searchQ) return;
-
   var t = TR[L];
   var res = document.getElementById('res');
   var found = null;
-
   for (var i = 0; i < DATA.people.length; i++) {
     var pn = DATA.people[i].name.toLowerCase();
     var matched = false;
-    if (pn.indexOf(searchQ) >= 0) {
-      matched = true;
-    } else {
+    if (pn.indexOf(searchQ) >= 0) { matched = true; }
+    else {
       var words = searchQ.split(' ');
       for (var w = 0; w < words.length; w++) {
-        if (words[w].length > 1 && pn.indexOf(words[w]) >= 0) {
-          matched = true;
-          break;
-        }
+        if (words[w].length > 1 && pn.indexOf(words[w]) >= 0) { matched = true; break; }
       }
     }
-    if (matched) {
-      found = DATA.people[i];
-      break;
-    }
+    if (matched) { found = DATA.people[i]; break; }
   }
-
   if (!found) {
-    res.innerHTML =
-      '<div class="empty">' +
-      '<div class="eico">&#128269;</div>' +
-      '<div>' + t.nf + '</div>' +
-      '<div style="font-size:.82rem;margin-top:6px;color:var(--sub)">' + t.ns + '</div>' +
-      '</div>';
+    res.innerHTML = '<div class="empty"><div class="eico">&#128269;</div><div>' + t.nf + '</div><div style="font-size:.82rem;margin-top:6px;color:var(--sub)">' + t.ns + '</div></div>';
     return;
   }
-
   var today = new Date();
   var todayDay = today.getDate();
   var todayMonth = today.getMonth() + 1;
   var todayYear = today.getFullYear();
   var isNow = (DATA.monthNum === todayMonth && DATA.year === todayYear);
-  var initials = found.name.split(' ').map(function(x) {
-    return x[0] || '';
-  }).join('').slice(0, 2).toUpperCase();
-
+  var initials = found.name.split(' ').map(function(x){ return x[0]||''; }).join('').slice(0,2).toUpperCase();
   function makeCard(d) {
     var s = found.shifts[d];
-    var dt = new Date(DATA.year, DATA.monthNum - 1, d);
+    var dt = new Date(DATA.year, DATA.monthNum-1, d);
     var dow = t.dw[dt.getDay()];
-    var dateStr = d + ' ' + TR.en.mo[DATA.monthNum - 1];
-    if (s.off) {
-      return '<div class="sc off">' +
-        '<div class="dot do"></div>' +
-        '<div class="dc"><div class="dd">' + dateStr + '</div><div class="dw2">' + dow + '</div></div>' +
-        '<div class="dt">' + t.off + '</div>' +
-        '</div>';
+    var dateStr = d + ' ' + TR.en.mo[DATA.monthNum-1];
+    if (s.off) return '<div class="sc off"><div class="dot do"></div><div class="dc"><div class="dd">'+dateStr+'</div><div class="dw2">'+dow+'</div></div><div class="dt">'+t.off+'</div></div>';
+    var over = s.overnight ? '<div class="dn2">&#9201; '+t.on+'</div>' : '';
+    return '<div class="sc"><div class="dot '+(s.overnight?'dn':'dw')+'"></div><div class="dc"><div class="dd">'+dateStr+'</div><div class="dw2">'+dow+'</div></div><div><div class="dt">'+s.start+':00 &ndash; '+s.end+':00</div>'+over+'</div></div>';
+  }
+  var days = Object.keys(found.shifts).map(Number).sort(function(a,b){return a-b;});
+  var todayHTML='', upHTML='', oldHTML='';
+  if (isNow) {
+    var ts = found.shifts[todayDay];
+    if (!ts || ts.off) {
+      todayHTML = '<div class="tcard"><div class="tlbl">'+t.tl+'</div><div class="tst">&#127807; '+t.off+'</div></div>';
+    } else {
+      var over2 = ts.overnight ? '<span class="bdg">&#9201; '+t.on+'</span>' : '';
+      todayHTML = '<div class="tcard"><div class="tlbl">'+t.tl+'</div><div class="tst">&#9989; '+t.wk+over2+'</div><div class="ttm">'+ts.start+':00 &ndash; '+ts.end+':00</div></div>';
     }
-    var over = s.overnight ? '<div class="dn2">&#9201; ' + t.on + '</div>' : '';
-    var cls = s.overnight ? 'dn' : 'dw';
-    return '<div class="sc">' +
-      '<div class="dot ' + cls + '"></div>' +
-      '<div class="dc"><div class="dd">' + dateStr + '</div><div class="dw2">' + dow + '</div></div>' +
-      '<div><div class="dt">' + s.start + ':00 &ndash; ' + s.end + ':00</div>' + over + '</div>' +
+    var up = days.filter(function(d){return d>todayDay;});
+    var old = days.filter(function(d){return d<todayDay;});
+    upHTML = up.length ? '<div class="slist">'+up.map(makeCard).join('')+'</div>' : '<div class="empty"><div class="eico">&#128197;</div>'+t.nu+'</div>';
+    oldHTML = old.length ? '<div class="slist">'+old.map(makeCard).join('')+'</div>' : '<div class="empty"><div class="eico">&#128194;</div>'+t.no+'</div>';
+  } else {
+    var allCards = '<div class="slist">'+days.map(makeCard).join('')+'</div>';
+    todayHTML = '<div class="tcard"><div class="tlbl">'+t.tl+'</div><div class="tst">&#8212;</div></div>';
+    upHTML = allCards; oldHTML = allCards;
+  }
+  var tabs = '<div class="tabs">'+
+    '<button class="tab '+(TAB==='today'?'on':'')+'" onclick="TAB=\'today\';go()">'+t.tt+'</button>'+
+    '<button class="tab '+(TAB==='upcoming'?'on':'')+'" onclick="TAB=\'upcoming\';go()">'+t.tu+'</button>'+
+    '<button class="tab '+(TAB==='old'?'on':'')+'" onclick="TAB=\'old\';go()">'+t.to+'</button>'+
+    '</div>';
+  var content = TAB==='today' ? todayHTML : TAB==='upcoming' ? upHTML : oldHTML;
+  res.innerHTML =
+    '<div class="ph"><div class="av">'+initials+'</div>'+
+    '<div><div class="pn">'+found.name+'</div>'+
+    '<div class="pm">'+TR.en.mo[DATA.monthNum-1]+' '+DATA.year+'</div></div></div>'+
+    tabs + content;
+}
+</script>
+</body>
+</html>
