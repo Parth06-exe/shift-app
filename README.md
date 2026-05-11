@@ -1,4 +1,3 @@
-# shift-app
 # Shift Lookup | Pregled Izmen
 
 A bilingual shift schedule lookup web app built with plain HTML, CSS, and JavaScript.  
