@@ -1,0 +1,14 @@
+{
+  "name": "shift-app-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "func start"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0",
+    "@azure/storage-blob": "^12.0.0",
+    "xlsx": "^0.18.5"
+  }
+}
