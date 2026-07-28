@@ -4,11 +4,20 @@ const XLSX = require('xlsx');
 
 const DEFAULT_CONTAINER = 'schedules';
 const DEFAULT_BLOB = 'shift.xlsx';
+const DEFAULT_ALLOWED_ORIGIN = 'https://shiftappstore.z49.web.core.windows.net';
+const DEFAULT_CACHE_TTL_MS = 5 * 60 * 1000;
+const DEFAULT_MAX_BLOB_BYTES = 1024 * 1024;
+const MAX_NAME_LENGTH = 80;
+const MAX_CODE_LENGTH = 32;
+
+let cachedSchedule = null;
+let cachedAt = 0;
+let cachedKey = '';
 
 function responseHeaders() {
   return {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGIN || '*',
+    'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGIN || DEFAULT_ALLOWED_ORIGIN,
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type'
   };
@@ -16,6 +25,25 @@ function responseHeaders() {
 
 function json(status, body) {
   return { status, headers: responseHeaders(), jsonBody: body };
+}
+
+function envFlag(name, defaultValue) {
+  const value = String(process.env[name] || '').trim().toLowerCase();
+  if (!value) return defaultValue;
+  return ['1', 'true', 'yes', 'on'].includes(value);
+}
+
+function envInt(name, defaultValue) {
+  const value = parseInt(process.env[name] || '', 10);
+  return Number.isFinite(value) && value > 0 ? value : defaultValue;
+}
+
+function normalizeName(value) {
+  return String(value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function normalizeCode(value) {
+  return String(value || '').trim();
 }
 
 function monthFromTitle(title) {
@@ -127,19 +155,13 @@ function parseWorkbook(buffer) {
 
     people.push({
       name,
-      code: codeCol >= 0 ? String(row[codeCol] || '').trim() : '',
+      normalizedName: normalizeName(name),
+      code: codeCol >= 0 ? normalizeCode(row[codeCol]) : '',
       shifts
     });
   }
 
-  return { people, monthNum, year };
-}
-
-function matchesName(personName, query) {
-  const name = personName.toLowerCase();
-  const search = query.toLowerCase();
-  if (name.includes(search)) return true;
-  return search.split(' ').some((word) => word.length > 1 && name.includes(word));
+  return { people, monthNum, year, hasCodeColumn: codeCol >= 0 };
 }
 
 function toShiftList(person, monthNum, year) {
@@ -157,6 +179,44 @@ async function readBody(request) {
   }
 }
 
+async function loadSchedule(context) {
+  const connectionString = process.env.SHIFT_STORAGE_CONNECTION_STRING || process.env.AzureWebJobsStorage;
+  if (!connectionString) throw new Error('Storage connection string is not configured.');
+
+  const container = process.env.SHIFT_CONTAINER || DEFAULT_CONTAINER;
+  const blob = process.env.SHIFT_BLOB || DEFAULT_BLOB;
+  const cacheTtlMs = envInt('SHIFT_CACHE_TTL_MS', DEFAULT_CACHE_TTL_MS);
+  const maxBlobBytes = envInt('SHIFT_MAX_BLOB_BYTES', DEFAULT_MAX_BLOB_BYTES);
+  const cacheKey = `${container}/${blob}`;
+  const now = Date.now();
+
+  if (cachedSchedule && cachedKey === cacheKey && now - cachedAt < cacheTtlMs) {
+    return cachedSchedule;
+  }
+
+  const blobClient = BlobServiceClient
+    .fromConnectionString(connectionString)
+    .getContainerClient(container)
+    .getBlockBlobClient(blob);
+
+  const properties = await blobClient.getProperties();
+  if (properties.contentLength && properties.contentLength > maxBlobBytes) {
+    throw new Error('Schedule file is larger than the configured limit.');
+  }
+
+  const buffer = await blobClient.downloadToBuffer();
+  const schedule = parseWorkbook(buffer);
+  if (!schedule || !schedule.people.length) {
+    throw new Error('Schedule file format is invalid.');
+  }
+
+  cachedSchedule = schedule;
+  cachedAt = now;
+  cachedKey = cacheKey;
+  context.log(`Loaded schedule ${cacheKey} with ${schedule.people.length} people.`);
+  return schedule;
+}
+
 app.http('lookup', {
   methods: ['GET', 'POST', 'OPTIONS'],
   authLevel: 'anonymous',
@@ -165,33 +225,28 @@ app.http('lookup', {
 
     const body = request.method === 'POST' ? await readBody(request) : {};
     const name = String(request.query.get('name') || body.name || '').trim();
-    const code = String(request.query.get('code') || body.code || '').trim();
-    const requireCode = String(process.env.REQUIRE_EMPLOYEE_CODE || '').toLowerCase() === 'true';
+    const code = normalizeCode(request.query.get('code') || body.code || '');
+    const requireCode = envFlag('REQUIRE_EMPLOYEE_CODE', true);
 
     if (!name) return json(400, { error: 'Name is required.' });
+    if (name.length > MAX_NAME_LENGTH) return json(400, { error: 'Name is too long.' });
     if (requireCode && !code) return json(400, { error: 'Employee code is required.' });
-
-    const connectionString = process.env.SHIFT_STORAGE_CONNECTION_STRING || process.env.AzureWebJobsStorage;
-    if (!connectionString) return json(500, { error: 'Storage connection string is not configured.' });
+    if (code.length > MAX_CODE_LENGTH) return json(400, { error: 'Employee code is too long.' });
 
     try {
-      const container = process.env.SHIFT_CONTAINER || DEFAULT_CONTAINER;
-      const blob = process.env.SHIFT_BLOB || DEFAULT_BLOB;
-      const blobClient = BlobServiceClient
-        .fromConnectionString(connectionString)
-        .getContainerClient(container)
-        .getBlockBlobClient(blob);
-      const buffer = await blobClient.downloadToBuffer();
-      const schedule = parseWorkbook(buffer);
-      if (!schedule || !schedule.people.length) return json(500, { error: 'Schedule file format is invalid.' });
+      const schedule = await loadSchedule(context);
+      if (requireCode && !schedule.hasCodeColumn) {
+        return json(500, { error: 'Schedule file is missing an employee code column.' });
+      }
 
+      const normalizedName = normalizeName(name);
       const person = schedule.people.find((candidate) => {
-        if (!matchesName(candidate.name, name)) return false;
+        if (candidate.normalizedName !== normalizedName) return false;
         if (!requireCode) return true;
         return candidate.code && candidate.code === code;
       });
 
-      if (!person) return json(404, { error: 'Name not found in the schedule.' });
+      if (!person) return json(404, { error: 'Invalid name or employee code.' });
 
       return json(200, {
         name: person.name,
