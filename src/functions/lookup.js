@@ -10,6 +10,27 @@ const DEFAULT_MAX_BLOB_BYTES = 1024 * 1024;
 const MAX_NAME_LENGTH = 80;
 const MAX_CODE_LENGTH = 32;
 
+const MESSAGES = {
+  en: {
+    nameRequired: 'Name is required.',
+    nameTooLong: 'Name is too long.',
+    codeRequired: 'Employee code is required.',
+    codeTooLong: 'Employee code is too long.',
+    missingCodeColumn: 'Schedule file is missing an employee code column.',
+    invalidCredentials: 'Invalid name or employee code.',
+    readFailed: 'Could not read the schedule file.'
+  },
+  sl: {
+    nameRequired: 'Ime je obvezno.',
+    nameTooLong: 'Ime je predolgo.',
+    codeRequired: 'Koda zaposlenega je obvezna.',
+    codeTooLong: 'Koda zaposlenega je predolga.',
+    missingCodeColumn: 'V urniku manjka stolpec s kodo zaposlenega.',
+    invalidCredentials: 'Neveljavno ime ali koda zaposlenega.',
+    readFailed: 'Izmen ni bilo mogoče naložiti.'
+  }
+};
+
 let cachedSchedule = null;
 let cachedAt = 0;
 let cachedKey = '';
@@ -25,6 +46,10 @@ function responseHeaders() {
 
 function json(status, body) {
   return { status, headers: responseHeaders(), jsonBody: body };
+}
+
+function languageFrom(value) {
+  return String(value || '').toLowerCase() === 'sl' ? 'sl' : 'en';
 }
 
 function envFlag(name, defaultValue) {
@@ -224,19 +249,21 @@ app.http('lookup', {
     if (request.method === 'OPTIONS') return { status: 204, headers: responseHeaders() };
 
     const body = request.method === 'POST' ? await readBody(request) : {};
+    const lang = languageFrom(request.query.get('lang') || body.lang);
+    const text = MESSAGES[lang];
     const name = String(request.query.get('name') || body.name || '').trim();
     const code = normalizeCode(request.query.get('code') || body.code || '');
     const requireCode = envFlag('REQUIRE_EMPLOYEE_CODE', true);
 
-    if (!name) return json(400, { error: 'Name is required.' });
-    if (name.length > MAX_NAME_LENGTH) return json(400, { error: 'Name is too long.' });
-    if (requireCode && !code) return json(400, { error: 'Employee code is required.' });
-    if (code.length > MAX_CODE_LENGTH) return json(400, { error: 'Employee code is too long.' });
+    if (!name) return json(400, { error: text.nameRequired });
+    if (name.length > MAX_NAME_LENGTH) return json(400, { error: text.nameTooLong });
+    if (requireCode && !code) return json(400, { error: text.codeRequired });
+    if (code.length > MAX_CODE_LENGTH) return json(400, { error: text.codeTooLong });
 
     try {
       const schedule = await loadSchedule(context);
       if (requireCode && !schedule.hasCodeColumn) {
-        return json(500, { error: 'Schedule file is missing an employee code column.' });
+        return json(500, { error: text.missingCodeColumn });
       }
 
       const normalizedName = normalizeName(name);
@@ -246,7 +273,7 @@ app.http('lookup', {
         return candidate.code && candidate.code === code;
       });
 
-      if (!person) return json(404, { error: 'Invalid name or employee code.' });
+      if (!person) return json(404, { error: text.invalidCredentials });
 
       return json(200, {
         name: person.name,
@@ -256,7 +283,7 @@ app.http('lookup', {
       });
     } catch (error) {
       context.error(error);
-      return json(500, { error: 'Could not read the schedule file.' });
+      return json(500, { error: text.readFailed });
     }
   }
 });
