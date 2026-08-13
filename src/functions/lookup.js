@@ -71,6 +71,14 @@ function normalizeCode(value) {
   return String(value || '').trim();
 }
 
+function matchesName(personName, query) {
+  const name = normalizeName(personName);
+  const search = normalizeName(query);
+  if (!search) return false;
+  if (name === search || name.includes(search)) return true;
+  return search.split(' ').some((word) => word.length > 1 && name.includes(word));
+}
+
 function monthFromTitle(title) {
   const months = {
     january: 1, jan: 1, januar: 1,
@@ -268,9 +276,9 @@ app.http('lookup', {
 
       const normalizedName = normalizeName(name);
       const person = schedule.people.find((candidate) => {
-        if (candidate.normalizedName !== normalizedName) return false;
-        if (!requireCode) return true;
-        return candidate.code && candidate.code === code;
+        if (requireCode && (!candidate.code || candidate.code !== code)) return false;
+        if (!requireCode) return candidate.normalizedName === normalizedName;
+        return matchesName(candidate.name, name);
       });
 
       if (!person) return json(404, { error: text.invalidCredentials });
