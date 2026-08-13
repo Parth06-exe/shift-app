@@ -90,6 +90,6 @@ jobs:
             --name 'index.html' `
             --file './index.html' `
             --overwrite true `
-            --auth-mode login `
+            --auth-mode key `
             --content-type 'text/html' `
             --content-cache-control 'no-cache'
