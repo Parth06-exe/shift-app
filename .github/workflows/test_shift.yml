@@ -85,11 +85,10 @@ jobs:
         shell: pwsh
         run: |
           az storage blob upload `
-            --account-name '${{ env.STATIC_STORAGE_ACCOUNT }}' `
+            --connection-string '${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}' `
             --container-name '$web' `
             --name 'index.html' `
             --file './index.html' `
             --overwrite true `
-            --auth-mode key `
             --content-type 'text/html' `
             --content-cache-control 'no-cache'
