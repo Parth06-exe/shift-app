@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js project to Azure Function App - shift
+name: Build and deploy shift app
 
 on:
   push:
@@ -10,28 +10,29 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
-  NODE_VERSION: '22.x' # set this to the node version to use (supports 8.x, 10.x, 12.x)
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: .
+  NODE_VERSION: '22.x'
+  STATIC_STORAGE_ACCOUNT: shiftappstore
 
 jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read #This is required for actions/checkout
-      
+      contents: read
+
     steps:
-      - name: 'Checkout GitHub Action'
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node ${{ env.NODE_VERSION }} Environment
+      - name: Setup Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 'Resolve Project Dependencies Using Npm'
+      - name: Resolve project dependencies
         shell: pwsh
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          pushd '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           npm install
           npm run build --if-present
           npm run test --if-present
@@ -40,22 +41,31 @@ jobs:
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
+          name: shift-app
           path: .
 
   deploy:
     runs-on: windows-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: node-app
-      
+          name: shift-app
+          path: .
+
+      - name: Verify static website file exists
+        shell: pwsh
+        run: |
+          if (!(Test-Path -LiteralPath './index.html')) {
+            Get-ChildItem -Force
+            throw 'index.html was not found in the downloaded deployment artifact.'
+          }
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -63,11 +73,23 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F5336DC8C60C4B8AB3040EDE05AC8B14 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6A39A0AD53544475A4AB9320D65D5709 }}
 
-      - name: 'Run Azure Functions Action'
+      - name: Deploy Azure Function
         uses: Azure/functions-action@v1
         id: fa
         with:
-          app-name: 'shift'
-          slot-name: 'Production'
+          app-name: shift
+          slot-name: Production
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          
+
+      - name: Deploy static website index
+        shell: pwsh
+        run: |
+          az storage blob upload `
+            --account-name '${{ env.STATIC_STORAGE_ACCOUNT }}' `
+            --container-name '$web' `
+            --name 'index.html' `
+            --file './index.html' `
+            --overwrite true `
+            --auth-mode login `
+            --content-type 'text/html' `
+            --content-cache-control 'no-cache'
